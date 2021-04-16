@@ -38,7 +38,6 @@ export const authenApi = {
       method: 'get',
       url: `${authenServerEndpoint}/info`,
       headers: {
-        'Content-Type': 'application/json',
         Authorization: `Bearer ${accessToken}`,
       },
     });

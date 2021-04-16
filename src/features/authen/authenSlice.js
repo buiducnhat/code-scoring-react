@@ -94,6 +94,7 @@ export const authenSlice = createSlice({
         state.isPendingFetchGetUserData = true;
       })
       .addCase(fetchGetUserData.fulfilled, (state, action) => {
+        state.isLoggedIn = true;
         state.userData = action.payload;
         state.fetchGetUserDataMsg = null;
         state.isPendingFetchGetUserData = false;
@@ -111,7 +112,7 @@ export const authenSlice = createSlice({
         state.isPendingFetchLogin = false;
         state.fetchLoginMsg = null;
         state.isLoggedIn = true;
-        state.userData = { ...action.payload?.userData, accessToken: action.payload.accessToken };
+        state.userData = action.payload?.payload;
         localStorage.setItem('access-token', action.payload.accessToken);
       })
       .addCase(fetchLogin.rejected, (state, action) => {
@@ -132,7 +133,7 @@ export const authenSlice = createSlice({
         state.isPendingFetchRegister = false;
         state.fetchRegisterMsg = null;
         state.isLoggedIn = true;
-        state.userData = { ...action.payload?.userData, accessToken: action.payload.accessToken };
+        state.userData = action.payload.payload;
         localStorage.setItem('access-token', action.payload.accessToken);
       })
       .addCase(fetchRegister.rejected, (state, action) => {

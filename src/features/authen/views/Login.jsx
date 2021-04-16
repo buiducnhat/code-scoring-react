@@ -1,23 +1,23 @@
 import React, { useState } from 'react';
 import { Redirect, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchRegister } from './authenSlice';
 import {
   Avatar,
   Button,
   TextField,
+  FormControlLabel,
+  Checkbox,
   Typography,
   CssBaseline,
   CircularProgress,
   Container,
   Grid,
-  Box,
 } from '@material-ui/core';
 import { LockOutlined as LockIcon, ErrorOutlineRounded as ErrorIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 
-import Copyright from '../../components/Copyright/Copyright';
-import { listRoute } from '../../app/listRoute';
+import { fetchLogin } from 'src/features/authen/authenSlice';
+import { listRoute } from 'src/app/listRoute';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -50,11 +50,10 @@ const Login = (props) => {
   const dispatch = useDispatch();
 
   const isLoggedIn_gs = useSelector((state) => state.authenSlice.isLoggedIn);
-  const isPendingRegister_gs = useSelector((state) => state.authenSlice.isPendingFetchRegister);
-  const registerMsg_gs = useSelector((state) => state.authenSlice.fetchRegisterMsg);
+  const isPendingLogin_gs = useSelector((state) => state.authenSlice.isPendingFetchLogin);
+  const loginMsg_gs = useSelector((state) => state.authenSlice.fetchLoginMsg);
 
   const [emailInput_ls, setEmailInput_ls] = useState('');
-  const [nameInput_ls, setNameInput_ls] = useState('');
   const [passwordInput_ls, setPasswordInput_ls] = useState('');
 
   const classes = useStyles();
@@ -66,9 +65,8 @@ const Login = (props) => {
   const handleSubmitForm = (event) => {
     event.preventDefault();
     dispatch(
-      fetchRegister({
+      fetchLogin({
         email: emailInput_ls,
-        name: nameInput_ls,
         password: passwordInput_ls,
       })
     );
@@ -82,7 +80,7 @@ const Login = (props) => {
           <LockIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
-          ĐĂNG KÝ
+          ĐĂNG NHẬP
         </Typography>
         <form className={classes.form} noValidate onSubmit={handleSubmitForm}>
           <TextField
@@ -103,18 +101,6 @@ const Login = (props) => {
             margin="normal"
             required
             fullWidth
-            id="name"
-            label="Họ tên"
-            name="name"
-            autoComplete="name"
-            value={nameInput_ls}
-            onChange={(e) => setNameInput_ls(e.target.value)}
-          />
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
             name="password"
             label="Mật khẩu"
             type="password"
@@ -123,7 +109,11 @@ const Login = (props) => {
             value={passwordInput_ls}
             onChange={(e) => setPasswordInput_ls(e.target.value)}
           />
-          {registerMsg_gs && (
+          <FormControlLabel
+            control={<Checkbox value="remember" color="primary" />}
+            label="Nhớ mật khẩu"
+          />
+          {loginMsg_gs && (
             <Grid Container>
               <Grid item>
                 <Typography
@@ -134,7 +124,7 @@ const Login = (props) => {
                   className={classes.error}
                 >
                   <ErrorIcon />
-                  {registerMsg_gs}
+                  {loginMsg_gs}
                 </Typography>
               </Grid>
             </Grid>
@@ -147,20 +137,22 @@ const Login = (props) => {
             color="primary"
             className={classes.submit}
           >
-            {isPendingRegister_gs ? <CircularProgress color="inherit" size={20} /> : 'Đăng ký'}
+            {isPendingLogin_gs ? <CircularProgress color="inherit" size={20} /> : 'Đăng nhập'}
           </Button>
           <Grid container>
+            <Grid item xs>
+              <Link href="#" variant="body2">
+                Quên mật khẩu?
+              </Link>
+            </Grid>
             <Grid item>
-              <Link to={{ pathname: listRoute.login }} variant="body2">
-                {'Đã có tài khoản? Đăng nhập ngay'}
+              <Link to={{ pathname: listRoute.register }} variant="body2">
+                {'Chưa có tài khoản? Đăng ký ngay'}
               </Link>
             </Grid>
           </Grid>
         </form>
       </div>
-      <Box mt={8}>
-        <Copyright />
-      </Box>
     </Container>
   );
 };

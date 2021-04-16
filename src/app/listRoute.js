@@ -1,7 +1,11 @@
 export const listRoute = {
   home: '/',
 
-  authenEndpoint: '/auth',
+  authEndpoint: '/auth',
   login: '/login',
   register: '/register',
+
+  exerciseEndpoint: '/exercise',
+  listExercise: '/exercise',
+  exerciseDetail:'/exercise/:exerciseId'
 };
