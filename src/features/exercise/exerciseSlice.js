@@ -51,7 +51,31 @@ export const fetchSubmitExercise = createAsyncThunk(
           languageId,
           codeFile,
         });
-        console.log(response.data);
+
+        return resolve(response.data);
+      } catch (error) {
+        if (error.response) {
+          return reject(rejectWithValue(error.response.data));
+        }
+        return reject(error);
+      }
+    });
+  }
+);
+
+export const fetchRunExercise = createAsyncThunk(
+  'exercise/fetchRunExercise',
+  ({ exerciseId, scriptCode, languageId, codeFile }, { rejectWithValue }) => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const accessToken = localStorage.getItem('access-token');
+        let response = await exerciseApi.runExercise({
+          accessToken,
+          exerciseId,
+          scriptCode,
+          languageId,
+          codeFile,
+        });
 
         return resolve(response.data);
       } catch (error) {
@@ -70,7 +94,8 @@ export const exerciseSlice = createSlice({
     exercises: [],
     currentExercise: {},
     total: 0,
-    submitedResult: {},
+    runResult: {},
+    submittedResult: {},
 
     fetchListExerciseMsg: null,
     isPendingFetchListExercise: false,
@@ -80,6 +105,9 @@ export const exerciseSlice = createSlice({
 
     fetchSubmitExerciseMsg: null,
     isPendingFetchSubmitExercise: false,
+
+    fetchRunExerciseMsg: null,
+    isPendingFetchRunExercise: false,
   },
   reducers: {
     logout(state) {},
@@ -122,13 +150,29 @@ export const exerciseSlice = createSlice({
         state.isPendingFetchSubmitExercise = true;
       })
       .addCase(fetchSubmitExercise.fulfilled, (state, action) => {
-        state.submitedResult = action.payload;
+        state.submittedResult = action.payload;
         state.fetchSubmitExerciseMsg = null;
         state.isPendingFetchSubmitExercise = false;
       })
       .addCase(fetchSubmitExercise.rejected, (state, action) => {
         state.fetchSubmitExerciseMsg = action.payload?.message;
         state.isPendingFetchSubmitExercise = false;
+      })
+
+      // Handle fetch run exercise
+      .addCase(fetchRunExercise.pending, (state) => {
+        state.fetchRunExerciseMsg = null;
+        state.isPendingFetchRunExercise = true;
+      })
+      .addCase(fetchRunExercise.fulfilled, (state, action) => {
+        console.log(action.payload)
+        state.runResult = action.payload;
+        state.fetchRunExerciseMsg = null;
+        state.isPendingFetchRunExercise = false;
+      })
+      .addCase(fetchRunExercise.rejected, (state, action) => {
+        state.fetchRunExerciseMsg = action.payload?.message;
+        state.isPendingFetchRunExercise = false;
       });
   },
 });

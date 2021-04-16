@@ -40,3 +40,8 @@ export const LANGUAGE_CODE = {
   python: 'Python',
   node: 'NodeJs',
 };
+
+export const RUN_SUBMIT_EXERCISE_TYPE = {
+  run: 1,
+  submit: 2,
+};

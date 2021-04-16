@@ -79,12 +79,29 @@ export const exerciseApi = {
     });
   },
 
+  runExercise: ({ accessToken, exerciseId, scriptCode, languageId, codeFile }) => {
+    const formData = new FormData();
+    formData.append('languageId', languageId);
+    formData.append('scriptCode', scriptCode);
+    formData.append('code', codeFile);
+
+    return axios({
+      method: 'post',
+      url: `${exerciseServerEndpoint}/run/${exerciseId}`,
+      headers: {
+        // 'multipart/fo',
+        Authorization: `Bearer ${accessToken}`,
+      },
+      data: formData,
+    });
+  },
+
   submitExercise: ({ accessToken, exerciseId, scriptCode, languageId, codeFile }) => {
     const formData = new FormData();
     formData.append('languageId', languageId);
     formData.append('scriptCode', scriptCode);
     formData.append('code', codeFile);
-    console.log(formData);
+
     return axios({
       method: 'post',
       url: `${exerciseServerEndpoint}/submit/${exerciseId}`,
