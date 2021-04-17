@@ -26,7 +26,7 @@ export const fetchGetUserData = createAsyncThunk(
       try {
         const accessToken = localStorage.getItem('access-token');
         if (!accessToken) {
-          return resolve(null);
+          return reject(rejectWithValue('Không tìm thấy token'));
         }
 
         const response = await authenApi.getUserDataApi({ accessToken });
@@ -61,28 +61,27 @@ export const fetchRegister = createAsyncThunk(
   }
 );
 
+const orignalInitialState = {
+  isLoggedIn: false,
+  userData: {},
+
+  fetchLoginMsg: null,
+  isPendingFetchLogin: false,
+
+  fetchRegisterMsg: null,
+  isPendingFetchRegister: false,
+
+  fetchGetUserDataMsg: null,
+  isPendingFetchGetUserData: false,
+};
+
 export const authenSlice = createSlice({
   name: 'authen',
-  initialState: {
-    isLoggedIn: false,
-    userData: null,
-
-    fetchLoginMsg: null,
-    isPendingFetchLogin: false,
-
-    fetchRegisterMsg: null,
-    isPendingFetchRegister: false,
-
-    fetchGetUserDataMsg: null,
-    isPendingFetchGetUserData: false,
-  },
+  initialState: { ...orignalInitialState },
   reducers: {
     logout(state) {
-      state.fetchLoginMsg = null;
-      state.fetchRegisterMsg = null;
-      state.fetchGetUserDataMsg = null;
-      state.userData = null;
       state.isLoggedIn = false;
+      state.userData = null;
       localStorage.removeItem('access-token');
     },
   },

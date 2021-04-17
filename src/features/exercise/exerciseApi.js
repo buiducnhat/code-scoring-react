@@ -89,7 +89,7 @@ export const exerciseApi = {
       method: 'post',
       url: `${exerciseServerEndpoint}/run/${exerciseId}`,
       headers: {
-        // 'multipart/fo',
+        'Content-Type': 'multipart/form-data',
         Authorization: `Bearer ${accessToken}`,
       },
       data: formData,
@@ -106,7 +106,7 @@ export const exerciseApi = {
       method: 'post',
       url: `${exerciseServerEndpoint}/submit/${exerciseId}`,
       headers: {
-        // 'multipart/fo',
+        'Content-Type': 'multipart/form-data',
         Authorization: `Bearer ${accessToken}`,
       },
       data: formData,

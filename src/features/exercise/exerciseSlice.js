@@ -94,7 +94,7 @@ export const exerciseSlice = createSlice({
     exercises: [],
     currentExercise: {},
     total: 0,
-    runResult: {},
+    runResult: [],
     submittedResult: {},
 
     fetchListExerciseMsg: null,
@@ -165,7 +165,6 @@ export const exerciseSlice = createSlice({
         state.isPendingFetchRunExercise = true;
       })
       .addCase(fetchRunExercise.fulfilled, (state, action) => {
-        console.log(action.payload)
         state.runResult = action.payload;
         state.fetchRunExerciseMsg = null;
         state.isPendingFetchRunExercise = false;
