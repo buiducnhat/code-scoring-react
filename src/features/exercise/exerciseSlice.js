@@ -88,6 +88,31 @@ export const fetchRunExercise = createAsyncThunk(
   }
 );
 
+export const fetchCreateExercise = createAsyncThunk(
+  'exercise/fetchCreateExercise',
+  ({ title, point, testCases, languages }, { rejectWithValue }) => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const accessToken = localStorage.getItem('access-token');
+        let response = await exerciseApi.createExercise({
+          accessToken,
+          title,
+          point,
+          testCases,
+          languages,
+        });
+
+        return resolve(response.data);
+      } catch (error) {
+        if (error.response) {
+          return reject(rejectWithValue(error.response.data));
+        }
+        return reject(error);
+      }
+    });
+  }
+);
+
 export const exerciseSlice = createSlice({
   name: 'exercise',
   initialState: {
@@ -108,9 +133,14 @@ export const exerciseSlice = createSlice({
 
     fetchRunExerciseMsg: null,
     isPendingFetchRunExercise: false,
+
+    fetchCreateExerciseMsg: null,
+    isPendingFetchCreateExercise: false,
   },
   reducers: {
-    logout(state) {},
+    resetCurrentExercise(state) {
+      state.currentExercise = {};
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -172,10 +202,25 @@ export const exerciseSlice = createSlice({
       .addCase(fetchRunExercise.rejected, (state, action) => {
         state.fetchRunExerciseMsg = action.payload?.message;
         state.isPendingFetchRunExercise = false;
+      })
+
+      // Handle fetch create new exercise
+      .addCase(fetchCreateExercise.pending, (state) => {
+        state.fetchCreateExerciseMsg = null;
+        state.isPendingFetchCreateExercise = true;
+      })
+      .addCase(fetchCreateExercise.fulfilled, (state, action) => {
+        state.currentExercise = action.payload;
+        state.fetchCreateExerciseMsg = null;
+        state.isPendingFetchCreateExercise = false;
+      })
+      .addCase(fetchCreateExercise.rejected, (state, action) => {
+        state.fetchCreateExerciseMsg = action.payload?.message;
+        state.isPendingFetchCreateExercise = false;
       });
   },
 });
 
-export const {} = exerciseSlice.actions;
+export const { resetCurrentExercise } = exerciseSlice.actions;
 
 export default exerciseSlice.reducer;

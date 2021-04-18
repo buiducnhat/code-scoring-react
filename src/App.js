@@ -6,6 +6,7 @@ import Login from 'src/features/authen/views/Login';
 import Register from 'src/features/authen/views/Register';
 import ListExercise from 'src/features/exercise/views/ListExercise';
 import ExerciseDetail from 'src/features/exercise/views/ExerciseDetail';
+import CreateExercise from 'src/features/exercise/views/CreateExercise';
 import Header from 'src/components/Header';
 import Copyright from 'src/components/Copyright';
 import { listRoute } from 'src/app/listRoute';
@@ -26,6 +27,11 @@ const App = () => {
         <Route exact path={listRoute.home} render={(props) => <ListExercise {...props} />} />
         <Route path={listRoute.login} render={(props) => <Login {...props} />} />
         <Route path={listRoute.register} render={(props) => <Register {...props} />} />
+        <Route
+          exact
+          path={listRoute.createExercise}
+          render={(props) => <CreateExercise {...props} />}
+        />
         <Route path={listRoute.exerciseDetail} render={(props) => <ExerciseDetail {...props} />} />
         <Route path={listRoute.exerciseEndpoint} render={(props) => <ListExercise {...props} />} />
       </Switch>

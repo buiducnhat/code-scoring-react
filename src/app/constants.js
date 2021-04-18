@@ -45,3 +45,13 @@ export const RUN_SUBMIT_EXERCISE_TYPE = {
   run: 1,
   submit: 2,
 };
+
+export const MUI_COLOR = {
+  primary: '#3f51b5',
+  secondary: '#f50057',
+  error: '#f44336',
+  warning: '#ff9800',
+  info: '#2196f3',
+  success: '#4caf50',
+  gray: '#9e9e9e',
+};

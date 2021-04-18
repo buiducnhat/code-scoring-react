@@ -28,7 +28,10 @@ const useStyles = makeStyles((theme) => ({
     borderWidth: 2,
   },
   author: {
-    fontSize: 12,
+    fontSize: 14,
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(1),
+    color: theme.palette.info,
   },
   infoText: {
     fontSize: 14,
@@ -46,13 +49,13 @@ const ExerciseBox = ({ id, title, author, updatedAt, point }) => {
   ) : (
     <Card onClick={() => setRedirectToDetail_ls(true)}>
       <CardContent className={classes.wrapper}>
-        <Typography variant="h3" className={classes.title}>
+        <Typography color="primary" variant="h3" className={classes.title}>
           {title}
         </Typography>
         <Avatar
           alt="avatar"
           className={classes.avatar}
-          src="src/assets/images/avatar_default.png"
+          src={`https://i.pravatar.cc/150?u=${author}`}
         />
         <Typography className={classes.author}>{author}</Typography>
         <Grid container alignItems="center" justify="center">

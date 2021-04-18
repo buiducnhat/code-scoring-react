@@ -50,7 +50,7 @@ const ListExercise = () => {
                   <ExerciseBox
                     id={exercise.exercise_id}
                     title={exercise.title}
-                    author={exercise.created_by}
+                    author={exercise.author}
                     updatedAt={exercise.updated_at}
                     point={exercise.point}
                   />

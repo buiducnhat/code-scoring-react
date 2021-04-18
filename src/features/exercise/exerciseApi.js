@@ -1,5 +1,4 @@
 import axios from 'axios';
-// import FormData from 'form-data';
 
 import { SERVER_URL, ORDER_TYPE } from 'src/app/constants';
 

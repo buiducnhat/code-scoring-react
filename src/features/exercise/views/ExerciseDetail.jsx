@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import {
+  Avatar,
   Container,
   Grid,
   Typography,
@@ -31,12 +32,13 @@ import {
 } from '@material-ui/icons';
 
 import useCheckLogIn from 'src/hooks/useCheckLogIn';
-import { LANGUAGE_CODE } from 'src/app/constants';
+import { MUI_COLOR } from 'src/app/constants';
 import {
   fetchExerciseDetail,
   fetchSubmitExercise,
   fetchRunExercise,
 } from 'src/features/exercise/exerciseSlice';
+import { fetchListLanguage } from 'src/features/language/languageSlice';
 import { setToast } from 'src/features/ui/uiSlice';
 import LoadingScreen from 'src/components/LoadingScreen';
 import Toast from 'src/components/Toast';
@@ -92,6 +94,16 @@ const useStyles = makeStyles((theme) => ({
     display: 'none',
     minWidth: 120,
   },
+  extraInfo: {
+    display: 'flex',
+    alignItems: 'center',
+    flexDirection: 'column',
+  },
+  avatar: {
+    width: theme.spacing(8),
+    height: theme.spacing(8),
+    margin: theme.spacing(2),
+  },
 }));
 
 const ListExercise = (props) => {
@@ -102,13 +114,14 @@ const ListExercise = (props) => {
   // local state
   const { exerciseId } = props.match.params;
   const [uploadedFile_ls, setUploadedFile_ls] = useState(null);
-  const [language_ls, setLanguage_ls] = useState(LANGUAGE_CODE.c);
+  const [languageId_ls, setLanguageId_ls] = useState(1);
   const [openSelect_ls, setOpenSelect_ls] = useState(false);
   const [openLoginDialog_ls, setOpenLoginDialog_ls] = useState(false);
 
   // global state
   const [isLoggedIn_gs, userData_gs] = useCheckLogIn();
   const currentExercise_gs = useSelector((state) => state.exerciseSlice.currentExercise);
+  const language_gs = useSelector((state) => state.languageSlice.languages);
   const runResult_gs = useSelector((state) => state.exerciseSlice.runResult);
   const isRunningExercise_gs = useSelector(
     (state) => state.exerciseSlice.isPendingFetchRunExercise
@@ -119,7 +132,6 @@ const ListExercise = (props) => {
   );
 
   const handleUploadButton = () => {
-    console.log(1);
     !isLoggedIn_gs && setOpenLoginDialog_ls(true);
   };
 
@@ -129,18 +141,29 @@ const ListExercise = (props) => {
 
   const handleRunExercise = () => {
     dispatch(
-      fetchRunExercise({ exerciseId, scriptCode: '', languageId: 2, codeFile: uploadedFile_ls })
+      fetchRunExercise({
+        exerciseId,
+        scriptCode: '',
+        languageId: languageId_ls,
+        codeFile: uploadedFile_ls,
+      })
     );
   };
 
   const handleSubmitExercise = () => {
     dispatch(
-      fetchSubmitExercise({ exerciseId, scriptCode: '', languageId: 2, codeFile: uploadedFile_ls })
+      fetchSubmitExercise({
+        exerciseId,
+        scriptCode: '',
+        languageId: languageId_ls,
+        codeFile: uploadedFile_ls,
+      })
     );
   };
 
   useEffect(() => {
     dispatch(fetchExerciseDetail({ exerciseId }));
+    dispatch(fetchListLanguage());
   }, [dispatch, exerciseId]);
 
   useEffect(() => {
@@ -264,12 +287,12 @@ const ListExercise = (props) => {
                       open={openSelect_ls}
                       onClose={() => setOpenSelect_ls(false)}
                       onOpen={() => setOpenSelect_ls(true)}
-                      value={language_ls}
-                      onChange={(event) => setLanguage_ls(event.target.value)}
+                      value={languageId_ls}
+                      onChange={(event) => setLanguageId_ls(event.target.value)}
                     >
-                      {Object.keys(LANGUAGE_CODE).map((language) => (
-                        <MenuItem value={LANGUAGE_CODE[language]}>
-                          {LANGUAGE_CODE[language]}
+                      {language_gs.map((language, index) => (
+                        <MenuItem key={index} value={language.language_id}>
+                          {language.name}
                         </MenuItem>
                       ))}
                     </Select>
@@ -325,12 +348,16 @@ const ListExercise = (props) => {
 
           <Grid container spacing={2} item md={3} className={classes.contentWrap}>
             <Grid item xs={12}>
-              <Paper className={classes.commonPaperWrap} elevation={5}>
+              <Paper className={[classes.commonPaperWrap, classes.extraInfo]} elevation={5}>
+                <Avatar
+                  className={classes.avatar}
+                  src={`https://i.pravatar.cc/150?u=${currentExercise_gs.author}`}
+                />
                 <Chip
                   style={{ marginBottom: '1rem' }}
                   color="primary"
                   icon={<PersonIcon />}
-                  label={`Tác giả: ${currentExercise_gs.created_by}`}
+                  label={`Tác giả: ${currentExercise_gs.author}`}
                 />
                 <Chip
                   style={{ marginBottom: '1rem' }}
@@ -343,8 +370,8 @@ const ListExercise = (props) => {
                     style={{
                       backgroundColor:
                         submittedResult_gs.totalScore === currentExercise_gs.point
-                          ? '#2ecc71'
-                          : '#f1c40f',
+                          ? MUI_COLOR.success
+                          : MUI_COLOR.warning,
                       color: '#fff',
                     }}
                     color="primary"

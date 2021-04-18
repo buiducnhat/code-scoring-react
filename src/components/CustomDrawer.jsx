@@ -57,7 +57,11 @@ export default function CustomDrawer({ needOpen, setNeedOpen }) {
           <React.Fragment>
             <ListItem button>
               <div className={classes.userInfo}>
-                <Avatar alt="avatar" src={userData_gs.avatar} className={classes.avatar} />
+                <Avatar
+                  alt="avatar"
+                  src={`https://i.pravatar.cc/150?u=${userData_gs.name}`}
+                  className={classes.avatar}
+                />
                 <Typography variant="h6" color="primary">
                   {userData_gs.name}
                 </Typography>
@@ -86,6 +90,13 @@ export default function CustomDrawer({ needOpen, setNeedOpen }) {
             <HomeIcon color="primary" />
           </ListItemIcon>
           <ListItemText primary={'Trang chủ'} />
+        </ListItem>
+
+        <ListItem button component="a" href={listRoute.createExercise}>
+          <ListItemIcon>
+            <HomeIcon color="primary" />
+          </ListItemIcon>
+          <ListItemText primary={'Tạo bài tập'} />
         </ListItem>
       </List>
     </div>
