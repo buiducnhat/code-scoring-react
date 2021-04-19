@@ -20,7 +20,6 @@
     "react-redux": "^7.2.3",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
-    "tinymce": "^5.7.1",
     "yup": "^0.32.9"
   },
   "scripts": {

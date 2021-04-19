@@ -8,7 +8,7 @@ export const uiSlice = createSlice({
     },
     toast: {
       open: false,
-      type: '',
+      type: 'info',
       content: '',
       position: {
         vertical: 'top',

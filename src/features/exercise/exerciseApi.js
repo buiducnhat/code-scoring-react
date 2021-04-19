@@ -20,17 +20,18 @@ export const exerciseApi = {
     });
   },
 
-  getExerciseDetail: ({ exerciseId }) => {
+  getExerciseDetail: ({ accessToken, exerciseId }) => {
     return axios({
       method: 'get',
       url: `${exerciseServerEndpoint}/detail/${exerciseId}`,
       headers: {
         'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
       },
     });
   },
 
-  createExercise: ({ accessToken, title, point, testCases, languages }) => {
+  createExercise: ({ accessToken, title, content, point, testCases, languages }) => {
     return axios({
       method: 'post',
       url: `${exerciseServerEndpoint}/create`,
@@ -40,6 +41,7 @@ export const exerciseApi = {
       },
       data: {
         title,
+        content,
         point,
         testCases,
         languages,
@@ -47,7 +49,7 @@ export const exerciseApi = {
     });
   },
 
-  updateExercise: ({ accessToken, exerciseId, title, point, testCases, languages }) => {
+  updateExercise: ({ accessToken, exerciseId, title, content, point, testCases, languages }) => {
     return axios({
       method: 'put',
       url: `${exerciseServerEndpoint}/update/${exerciseId}`,
@@ -57,6 +59,7 @@ export const exerciseApi = {
       },
       data: {
         title,
+        content,
         point,
         testCases,
         languages,

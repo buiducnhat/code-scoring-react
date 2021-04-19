@@ -13,10 +13,10 @@ import {
   Button,
 } from '@material-ui/core';
 import {
-  Mail as MailIcon,
   ExitToApp as LogInIcon,
   MeetingRoom as LogOutIcon,
   Home as HomeIcon,
+  Create as CreateIcon,
 } from '@material-ui/icons';
 
 import useCheckLogin from 'src/hooks/useCheckLogIn';
@@ -67,7 +67,12 @@ export default function CustomDrawer({ needOpen, setNeedOpen }) {
                 </Typography>
               </div>
             </ListItem>
-            <ListItem button onClick={() => dispatch(logout())}>
+            <ListItem
+              button
+              component="a"
+              href={listRoute.login}
+              onClick={() => dispatch(logout())}
+            >
               <ListItemIcon>
                 <LogOutIcon color="secondary" />
               </ListItemIcon>
@@ -94,7 +99,7 @@ export default function CustomDrawer({ needOpen, setNeedOpen }) {
 
         <ListItem button component="a" href={listRoute.createExercise}>
           <ListItemIcon>
-            <HomeIcon color="primary" />
+            <CreateIcon color="primary" />
           </ListItemIcon>
           <ListItemText primary={'Tạo bài tập'} />
         </ListItem>

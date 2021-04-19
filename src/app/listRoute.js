@@ -7,6 +7,7 @@ export const listRoute = {
 
   exerciseEndpoint: '/exercise',
   listExercise: '/exercise',
-  exerciseDetail: '/exercise/:exerciseId',
+  exerciseDetail: '/exercise/detail/:exerciseId',
   createExercise: '/exercise/create',
+  updateExercise: '/exercise/edit/:exerciseId',
 };

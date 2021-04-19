@@ -38,8 +38,8 @@ export default function Toast() {
     <div className={classes.root}>
       <Snackbar
         anchorOrigin={{
-          vertical: toast_gs.position.vertical || 'top',
-          horizontal: toast_gs.position.horizontal || 'right',
+          vertical: toast_gs?.position?.vertical || 'top',
+          horizontal: toast_gs?.position?.horizontal || 'right',
         }}
         open={toast_gs.open}
         autoHideDuration={2000}

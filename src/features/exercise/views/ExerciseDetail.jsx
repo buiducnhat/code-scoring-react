@@ -106,7 +106,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ListExercise = (props) => {
+const ExerciseDetail = (props) => {
   const dispatch = useDispatch();
 
   const classes = useStyles();
@@ -173,8 +173,8 @@ const ListExercise = (props) => {
         content: 'Chạy code thành công, xem kết quả ở phần Test case!',
         type: 'success',
         position: {
-          vertical: 'center',
-          horizontal: 'center',
+          vertical: 'top',
+          horizontal: 'right',
         },
       })
     );
@@ -187,8 +187,8 @@ const ListExercise = (props) => {
         content: 'Nộp bài thành công!',
         type: 'success',
         position: {
-          vertical: 'center',
-          horizontal: 'center',
+          vertical: 'top',
+          horizontal: 'right',
         },
       })
     );
@@ -205,11 +205,9 @@ const ListExercise = (props) => {
             <Grid item xs={12}>
               <Paper className={classes.commonPaperWrap} elevation={5}>
                 <Typography variant="h4" color="primary" style={{ marginBottom: '2rem' }}>
-                  {currentExercise_gs?.title}
+                  {currentExercise_gs.title}
                 </Typography>
-                <Typography className={classes.paragraph} paragraph>
-                  {currentExercise_gs?.content}
-                </Typography>
+                <div dangerouslySetInnerHTML={{ __html: currentExercise_gs.content }} />
               </Paper>
             </Grid>
 
@@ -248,7 +246,7 @@ const ListExercise = (props) => {
                                     </Typography>
                                   </Box>
                                 </Box>
-                                {runResult_gs.length && (
+                                {runResult_gs.length > 0 && (
                                   <Box className={classes.ioArea}>
                                     <Typography>{'Kết quả chạy:'}</Typography>
                                     <Box className={classes.ioDataArea}>
@@ -389,4 +387,4 @@ const ListExercise = (props) => {
   );
 };
 
-export default ListExercise;
+export default ExerciseDetail;

@@ -45,7 +45,7 @@ const ExerciseBox = ({ id, title, author, updatedAt, point }) => {
   const [redirectToDetail_ls, setRedirectToDetail_ls] = useState(false);
 
   return redirectToDetail_ls ? (
-    <Redirect to={{ pathname: `${listRoute.exerciseEndpoint}/${id}` }} />
+    <Redirect to={{ pathname: `${listRoute.exerciseEndpoint}/detail/${id}` }} />
   ) : (
     <Card onClick={() => setRedirectToDetail_ls(true)}>
       <CardContent className={classes.wrapper}>

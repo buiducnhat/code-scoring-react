@@ -25,7 +25,8 @@ export const fetchExerciseDetail = createAsyncThunk(
   ({ exerciseId }, { rejectWithValue }) => {
     return new Promise(async (resolve, reject) => {
       try {
-        let response = await exerciseApi.getExerciseDetail({ exerciseId });
+        const accessToken = localStorage.getItem('access-token');
+        let response = await exerciseApi.getExerciseDetail({ accessToken, exerciseId });
 
         return resolve(response.data);
       } catch (error) {
@@ -90,7 +91,7 @@ export const fetchRunExercise = createAsyncThunk(
 
 export const fetchCreateExercise = createAsyncThunk(
   'exercise/fetchCreateExercise',
-  ({ title, point, testCases, languages }, { rejectWithValue }) => {
+  ({ title, point, content, testCases, languages }, { rejectWithValue }) => {
     return new Promise(async (resolve, reject) => {
       try {
         const accessToken = localStorage.getItem('access-token');
@@ -98,6 +99,34 @@ export const fetchCreateExercise = createAsyncThunk(
           accessToken,
           title,
           point,
+          content,
+          testCases,
+          languages,
+        });
+
+        return resolve(response.data);
+      } catch (error) {
+        if (error.response) {
+          return reject(rejectWithValue(error.response.data));
+        }
+        return reject(error);
+      }
+    });
+  }
+);
+
+export const fetchUpdateExercise = createAsyncThunk(
+  'exercise/fetchUpdateExercise',
+  ({ exerciseId, title, point, content, testCases, languages }, { rejectWithValue }) => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const accessToken = localStorage.getItem('access-token');
+        let response = await exerciseApi.updateExercise({
+          accessToken,
+          exerciseId,
+          title,
+          point,
+          content,
           testCases,
           languages,
         });
@@ -136,6 +165,9 @@ export const exerciseSlice = createSlice({
 
     fetchCreateExerciseMsg: null,
     isPendingFetchCreateExercise: false,
+
+    fetchUpdateExerciseMsg: null,
+    isPendingFetchUpdateExercise: false,
   },
   reducers: {
     resetCurrentExercise(state) {
@@ -217,6 +249,21 @@ export const exerciseSlice = createSlice({
       .addCase(fetchCreateExercise.rejected, (state, action) => {
         state.fetchCreateExerciseMsg = action.payload?.message;
         state.isPendingFetchCreateExercise = false;
+      })
+
+      // Handle fetch update exercise
+      .addCase(fetchUpdateExercise.pending, (state) => {
+        state.fetchUpdateExerciseMsg = null;
+        state.isPendingFetchUpdateExercise = true;
+      })
+      .addCase(fetchUpdateExercise.fulfilled, (state, action) => {
+        state.currentExercise = action.payload;
+        state.fetchUpdateExerciseMsg = null;
+        state.isPendingFetchUpdateExercise = false;
+      })
+      .addCase(fetchUpdateExercise.rejected, (state, action) => {
+        state.fetchUpdateExerciseMsg = action.payload?.message;
+        state.isPendingFetchUpdateExercise = false;
       });
   },
 });
