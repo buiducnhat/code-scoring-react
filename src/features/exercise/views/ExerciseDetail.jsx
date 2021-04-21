@@ -169,14 +169,6 @@ const ExerciseDetail = (props) => {
     );
   };
 
-  // hightlight code
-  useEffect(() => {
-    const script = document.createElement('script');
-    script.async = true;
-    script.src = `https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/prism.min.js`;
-    document.body.appendChild(script);
-  }, []);
-
   useEffect(() => {
     dispatch(fetchExerciseDetail({ exerciseId }));
     dispatch(fetchListLanguage());
@@ -210,6 +202,23 @@ const ExerciseDetail = (props) => {
     );
   }, [dispatch, isSubmittingExercise_gs, submittedResult_gs]);
 
+  useEffect(() => {
+    const script = document.createElement('script');
+    const script2 = document.createElement('script');
+    script.async = true;
+    script2.async = true;
+    script.src = `https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/prism.min.js`;
+    script2.src = `https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/plugins/autoloader/prism-autoloader.min.js`;
+    if (currentExercise_gs.content) {
+      document.body.appendChild(script);
+      document.body.appendChild(script2);
+      return () => {
+        document.body.removeChild(script);
+        document.body.removeChild(script2);
+      };
+    }
+  }, [currentExercise_gs.content]);
+
   return (
     <Container className={classes.root}>
       {!currentExercise_gs ? (
@@ -230,19 +239,21 @@ const ExerciseDetail = (props) => {
 
                 <div dangerouslySetInnerHTML={{ __html: currentExercise_gs.content }} />
 
-                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                  <Button
-                    color="primary"
-                    size="large"
-                    onClick={() =>
-                      routerHistory.push(`${listRoute.updateExerciseEndpoint}/${exerciseId}`, {
-                        action: EDIT_EXERCISE_ACTION.update,
-                      })
-                    }
-                  >
-                    Sửa bài
-                  </Button>
-                </div>
+                {isAuthor && (
+                  <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                    <Button
+                      color="primary"
+                      size="large"
+                      onClick={() =>
+                        routerHistory.push(`${listRoute.updateExerciseEndpoint}/${exerciseId}`, {
+                          action: EDIT_EXERCISE_ACTION.update,
+                        })
+                      }
+                    >
+                      Sửa bài
+                    </Button>
+                  </div>
+                )}
               </Paper>
             </Grid>
 
