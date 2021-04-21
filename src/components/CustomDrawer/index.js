@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import React from 'react';
+import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import {
@@ -10,7 +11,6 @@ import {
   Avatar,
   Typography,
   Divider,
-  Button,
 } from '@material-ui/core';
 import {
   ExitToApp as LogInIcon,
@@ -22,6 +22,7 @@ import {
 import useCheckLogin from 'src/hooks/useCheckLogIn';
 import { logout } from 'src/features/authen/authenSlice';
 import { listRoute } from 'src/app/listRoute';
+import { EDIT_EXERCISE_ACTION } from 'src/app/constants';
 
 const useStyles = makeStyles((theme) => ({
   list: {
@@ -67,42 +68,56 @@ export default function CustomDrawer({ needOpen, setNeedOpen }) {
                 </Typography>
               </div>
             </ListItem>
-            <ListItem
-              button
-              component="a"
-              href={listRoute.login}
-              onClick={() => dispatch(logout())}
-            >
-              <ListItemIcon>
-                <LogOutIcon color="secondary" />
-              </ListItemIcon>
-              <ListItemText primary={'Đăng xuất'} />
-            </ListItem>
+            <Link to={{ pathname: listRoute.login }} color="#000">
+              <ListItem
+                button
+                onClick={() => {
+                  dispatch(logout());
+                  setNeedOpen(false);
+                }}
+              >
+                <ListItemIcon>
+                  <LogOutIcon color="secondary" />
+                </ListItemIcon>
+                <ListItemText primary={'Đăng xuất'} />
+              </ListItem>
+            </Link>
           </React.Fragment>
         ) : (
-          <ListItem button component="a" href={listRoute.login}>
-            <ListItemIcon>
-              <LogInIcon color="primary" />
-            </ListItemIcon>
-            <ListItemText primary={'Đăng nhập'} />
-          </ListItem>
+          <Link to={{ pathname: listRoute.login }}>
+            <ListItem button>
+              <ListItemIcon>
+                <LogInIcon color="primary" />
+              </ListItemIcon>
+              <ListItemText primary={'Đăng nhập'} />
+            </ListItem>
+          </Link>
         )}
 
         <Divider />
 
-        <ListItem button component="a" href={listRoute.home}>
-          <ListItemIcon>
-            <HomeIcon color="primary" />
-          </ListItemIcon>
-          <ListItemText primary={'Trang chủ'} />
-        </ListItem>
+        <Link to={{ pathname: listRoute.home }}>
+          <ListItem button>
+            <ListItemIcon>
+              <HomeIcon color="primary" />
+            </ListItemIcon>
+            <ListItemText primary={'Trang chủ'} />
+          </ListItem>
+        </Link>
 
-        <ListItem button component="a" href={listRoute.createExercise}>
-          <ListItemIcon>
-            <CreateIcon color="primary" />
-          </ListItemIcon>
-          <ListItemText primary={'Tạo bài tập'} />
-        </ListItem>
+        <Link
+          to={{
+            pathname: listRoute.createExercise,
+            state: { action: EDIT_EXERCISE_ACTION.create },
+          }}
+        >
+          <ListItem button>
+            <ListItemIcon>
+              <CreateIcon color="primary" />
+            </ListItemIcon>
+            <ListItemText primary={'Tạo bài tập'} />
+          </ListItem>
+        </Link>
       </List>
     </div>
   );

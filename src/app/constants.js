@@ -55,3 +55,8 @@ export const MUI_COLOR = {
   success: '#4caf50',
   gray: '#9e9e9e',
 };
+
+export const EDIT_EXERCISE_ACTION = {
+  create: 1,
+  update: 2,
+};

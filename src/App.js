@@ -9,6 +9,7 @@ import ExerciseDetail from 'src/features/exercise/views/ExerciseDetail';
 import EditExercise from 'src/features/exercise/views/EditExercise';
 import Header from 'src/components/Header';
 import Copyright from 'src/components/Copyright';
+import PageNotFound from 'src/components/PageNotFound';
 import { listRoute } from 'src/app/listRoute';
 import { fetchGetUserData } from 'src/features/authen/authenSlice';
 import './App.scss';
@@ -37,8 +38,17 @@ const App = () => {
           path={listRoute.updateExercise}
           render={(props) => <EditExercise {...props} />}
         />
-        <Route path={listRoute.exerciseDetail} render={(props) => <ExerciseDetail {...props} />} />
-        <Route path={listRoute.exerciseEndpoint} render={(props) => <ListExercise {...props} />} />
+        <Route
+          exact
+          path={listRoute.exerciseDetail}
+          render={(props) => <ExerciseDetail {...props} />}
+        />
+        <Route
+          exact
+          path={listRoute.exerciseEndpoint}
+          render={(props) => <ListExercise {...props} />}
+        />
+        <Route path="*" component={PageNotFound} />
       </Switch>
       <Copyright />
     </React.Fragment>

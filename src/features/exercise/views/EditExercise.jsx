@@ -8,7 +8,6 @@ import {
   Chip,
   Card,
   Box,
-  Typography,
   Checkbox,
   Button,
   CircularProgress,
@@ -25,12 +24,16 @@ import { ExpandMore as ExpandIcon } from '@material-ui/icons';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 
+import { EDIT_EXERCISE_ACTION } from 'src/app/constants';
+import { setToast } from 'src/features/ui/uiSlice';
 import {
   fetchCreateExercise,
   fetchExerciseDetail,
   fetchUpdateExercise,
+  resetCurrentExercise,
 } from 'src/features/exercise/exerciseSlice';
 import { fetchListLanguage } from 'src/features/language/languageSlice';
+import Toast from 'src/components/Toast';
 import Editor from 'src/features/exercise/components/Editor';
 import LoadingScreen from 'src/components/LoadingScreen';
 
@@ -51,19 +54,8 @@ const useStyles = makeStyles((theme) => ({
   chip: {
     margin: theme.spacing(0.5),
   },
-  buttonProgress: {
-    color: colors.green[500],
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    marginTop: -12,
-    marginLeft: -12,
-  },
   margin1: {
     margin: theme.spacing(1),
-    '&$expanded': {
-      margin: theme.spacing(0),
-    },
   },
   testCase: {
     width: '100%',
@@ -81,7 +73,7 @@ const useStyles = makeStyles((theme) => ({
 
 const EditExercise = (props) => {
   const { exerciseId } = props.match.params;
-  const toEdit = !!exerciseId;
+  const { action } = props.location.state || EDIT_EXERCISE_ACTION.create;
 
   const dispatch = useDispatch();
 
@@ -96,38 +88,17 @@ const EditExercise = (props) => {
   const isCreatingExercise_gs = useSelector(
     (state) => state.exerciseSlice.isPendingFetchCreateExercise
   );
+  const isUpdatingExercise_gs = useSelector(
+    (state) => state.exerciseSlice.isPendingFetchUpdateExercise
+  );
 
   // local state
   const [content_ls, setContent_ls] = useState('');
   const [languages_ls, setLanguages_ls] = useState([]);
   const [languagesId_ls, setLanguagesId_ls] = useState([]);
-  const [testCases_ls, setTestCases_ls] = useState([]);
+  const [testCases_ls, setTestCases_ls] = useState(currentExercise_gs.testCases || []);
   const [currentTestCase_ls, setCurrentTestCase_ls] = useState({});
   const [openTestCaseDialog_ls, setOpenTestCaseDialog_ls] = useState(false);
-
-  useEffect(() => {
-    dispatch(fetchListLanguage());
-    exerciseId && dispatch(fetchExerciseDetail({ exerciseId }));
-  }, [dispatch, exerciseId]);
-
-  useEffect(() => {
-    if (toEdit) {
-      setLanguages_ls(
-        languages_gs.filter((language) =>
-          currentExercise_gs.languages?.includes(language.language_id)
-        )
-      );
-    } else {
-      setLanguages_ls(languages_gs);
-    }
-    setLanguagesId_ls(
-      currentExercise_gs.languages || languages_gs.map((language) => language.language_id)
-    );
-  }, [currentExercise_gs, toEdit, languages_gs]);
-
-  useEffect(() => {
-    setTestCases_ls(currentExercise_gs.testCases || []);
-  }, [currentExercise_gs]);
 
   const handleDeleteLanguages = (languageToDelete) => () => {
     setLanguages_ls((languages) =>
@@ -150,13 +121,61 @@ const EditExercise = (props) => {
       languages: languagesId_ls,
       testCases: testCases_ls,
     });
-    if (!toEdit && exerciseData) {
+    if (action === EDIT_EXERCISE_ACTION.create && exerciseData) {
       dispatch(fetchCreateExercise({ ...exerciseData }));
-    } else if (toEdit && exerciseData) {
+    } else if (action === EDIT_EXERCISE_ACTION.update && exerciseData) {
       dispatch(fetchUpdateExercise({ ...exerciseData, exerciseId }));
     }
-    return;
+    // return;
   };
+
+  useEffect(() => {
+    dispatch(fetchListLanguage());
+    action === EDIT_EXERCISE_ACTION.update &&
+      exerciseId &&
+      dispatch(fetchExerciseDetail({ exerciseId }));
+  }, [dispatch, action, exerciseId]);
+
+  useEffect(() => {
+    if (action === EDIT_EXERCISE_ACTION.update) {
+      setLanguages_ls(
+        languages_gs.filter((language) =>
+          currentExercise_gs.languages?.includes(language.language_id)
+        )
+      );
+      console.log(currentExercise_gs.languages);
+      setLanguagesId_ls(
+        currentExercise_gs.languages || languages_gs.map((language) => language.language_id)
+      );
+    } else {
+      setLanguages_ls(languages_gs);
+      setLanguagesId_ls(languages_gs.map((language) => language.language_id));
+    }
+  }, [currentExercise_gs, action, languages_gs]);
+
+  // useEffect(() => {
+  //   setTestCases_ls(currentExercise_gs.testCases || []);
+  // }, [currentExercise_gs]);
+
+  useEffect(() => {
+    if (action === EDIT_EXERCISE_ACTION.create) {
+      dispatch(resetCurrentExercise());
+    }
+  }, [dispatch, action]);
+
+  // useEffect(() => {
+  //   dispatch(
+  //     setToast({
+  //       open: !isCreatingExercise_gs,
+  //       content: 'Chạy code thành công, xem kết quả ở phần Test case!',
+  //       type: 'success',
+  //       position: {
+  //         vertical: 'top',
+  //         horizontal: 'right',
+  //       },
+  //     })
+  //   );
+  // }, []);
 
   return (
     <Container>
@@ -167,54 +186,32 @@ const EditExercise = (props) => {
           <Grid item xs={12} className={classes.editorWrap}>
             <Formik
               initialValues={
-                currentExercise_gs.title
+                action === EDIT_EXERCISE_ACTION.update
                   ? { ...currentExercise_gs }
                   : {
                       title: '',
                       point: 0,
                       content: '',
                       testCases: [],
-                      languages: [],
+                      languages: languagesId_ls || [],
                     }
               }
+              enableReinitialize
               onSubmit={handleSubmit}
               validationSchema={yup.object().shape({
                 title: yup
                   .string()
                   .max(255, 'Tiêu đề không quá 255 ký tự')
                   .required('Tiêu đề không được để trống'),
-                content: yup.string().required('Nội dung không được để trống'),
                 point: yup
                   .number()
                   .positive('Điểm số tối thiểu bằng 0')
                   .integer('Điểm số là số nguyên')
                   .required('Điểm không được để trống'),
-                testCases: yup
-                  .array()
-                  .of(
-                    yup.object().shape({
-                      input: yup.string().required('Input không được để trống'),
-                      output: yup.string().required('Output không được để trống'),
-                      limitedTime: yup
-                        .number()
-                        .min(500, 'Thời gian tối thiếu bằng 500 mili giây')
-                        .notRequired(),
-                    })
-                  )
-                  .required(),
-                languages: yup.array().required().of(yup.number().integer()),
               })}
             >
-              {(props) => {
-                const {
-                  values,
-                  touched,
-                  errors,
-                  isSubmitting,
-                  handleChange,
-                  handleBlur,
-                  handleSubmit,
-                } = props;
+              {(formikProp) => {
+                const { values, touched, errors, handleChange, handleBlur, handleSubmit } = formikProp;
                 return (
                   <form onSubmit={handleSubmit}>
                     <Grid container spacing={2}>
@@ -349,11 +346,16 @@ const EditExercise = (props) => {
                                 {testCases_ls.length > 0 &&
                                   testCases_ls.map((testCase, index) => (
                                     <Accordion key={index} variant="outlined">
-                                      <AccordionSummary expandIcon={<ExpandIcon />}>{`Test case ${
-                                        index + 1
-                                      }`}</AccordionSummary>
-                                      <AccordionDetails>
-                                        <Box className={classes.ioArea} marginBottom={1}>
+                                      <AccordionSummary
+                                        expandIcon={<ExpandIcon />}
+                                        style={{ backgroundColor: colors.grey[100] }}
+                                      >
+                                        {`Test case ${index + 1}`}
+                                      </AccordionSummary>
+                                      <AccordionDetails
+                                        style={{ backgroundColor: colors.grey[50] }}
+                                      >
+                                        <Box>
                                           <TextField
                                             label="Input"
                                             fullWidth
@@ -391,21 +393,30 @@ const EditExercise = (props) => {
                       <Grid item xs={6}></Grid>
 
                       <Grid item container xs={6} direction="row" justify="flex-end">
-                        <Button variant="contained" size="large" style={{ marginRight: 20 }}>
+                        <Button
+                          variant="contained"
+                          size="large"
+                          style={{ marginRight: 20 }}
+                          onClick={() => props.history.goBack()}
+                        >
                           Hủy
                         </Button>
                         <Button
                           variant="contained"
                           size="large"
                           color="primary"
-                          disable={isCreatingExercise_gs || isSubmitting}
+                          disabled={isCreatingExercise_gs || isUpdatingExercise_gs}
                           type="submit"
                         >
-                          {toEdit ? `Cập nhật` : `Tạo mới`}
+                          {action === EDIT_EXERCISE_ACTION.update ? `Cập nhật` : `Tạo mới`}
+                          {(isCreatingExercise_gs || isUpdatingExercise_gs) && (
+                            <CircularProgress
+                              size={24}
+                              color="inherit"
+                              style={{ marginLeft: 10 }}
+                            />
+                          )}
                         </Button>
-                        {(isCreatingExercise_gs || isSubmitting) && (
-                          <CircularProgress size={24} className={classes.buttonProgress} />
-                        )}
                       </Grid>
                     </Grid>
                   </form>

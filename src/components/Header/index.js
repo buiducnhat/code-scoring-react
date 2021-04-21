@@ -4,7 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { AppBar, Toolbar, Typography, Button, IconButton, Link, Drawer } from '@material-ui/core';
 import { Menu as MenuIcon } from '@material-ui/icons';
 
-import CustomDrawer from './CustomDrawer';
+import CustomDrawer from '../CustomDrawer';
 
 const useStyles = makeStyles((theme) => ({
   root: {

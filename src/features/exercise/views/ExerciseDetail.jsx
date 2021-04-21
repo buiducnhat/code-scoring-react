@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router';
 import { makeStyles } from '@material-ui/core/styles';
 import {
   Avatar,
@@ -31,8 +32,9 @@ import {
   Person as PersonIcon,
 } from '@material-ui/icons';
 
+import { listRoute } from 'src/app/listRoute';
 import useCheckLogIn from 'src/hooks/useCheckLogIn';
-import { MUI_COLOR } from 'src/app/constants';
+import { MUI_COLOR, EDIT_EXERCISE_ACTION } from 'src/app/constants';
 import {
   fetchExerciseDetail,
   fetchSubmitExercise,
@@ -45,11 +47,14 @@ import Toast from 'src/components/Toast';
 import DialogToLogin from 'src/components/DialogToLogin';
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    '& img': {
+      maxWidth: '100%',
+      height: 'auto',
+    },
+  },
   successBg: {
     backgroundColor: theme.palette.success,
-  },
-  warnBg: {
-    backgroundColor: theme.palette.warn,
   },
   commonPaperWrap: {
     padding: theme.spacing(4),
@@ -109,14 +114,9 @@ const useStyles = makeStyles((theme) => ({
 const ExerciseDetail = (props) => {
   const dispatch = useDispatch();
 
-  const classes = useStyles();
+  const routerHistory = useHistory();
 
-  // local state
-  const { exerciseId } = props.match.params;
-  const [uploadedFile_ls, setUploadedFile_ls] = useState(null);
-  const [languageId_ls, setLanguageId_ls] = useState(1);
-  const [openSelect_ls, setOpenSelect_ls] = useState(false);
-  const [openLoginDialog_ls, setOpenLoginDialog_ls] = useState(false);
+  const classes = useStyles();
 
   // global state
   const [isLoggedIn_gs, userData_gs] = useCheckLogIn();
@@ -130,6 +130,14 @@ const ExerciseDetail = (props) => {
   const isSubmittingExercise_gs = useSelector(
     (state) => state.exerciseSlice.isPendingFetchSubmitExercise
   );
+
+  // local state
+  const { exerciseId } = props.match.params;
+  const [uploadedFile_ls, setUploadedFile_ls] = useState(null);
+  const [languageId_ls, setLanguageId_ls] = useState(1);
+  const [openSelect_ls, setOpenSelect_ls] = useState(false);
+  const [openLoginDialog_ls, setOpenLoginDialog_ls] = useState(false);
+  const isAuthor = userData_gs?.user_id === currentExercise_gs.created_by || false;
 
   const handleUploadButton = () => {
     !isLoggedIn_gs && setOpenLoginDialog_ls(true);
@@ -160,6 +168,14 @@ const ExerciseDetail = (props) => {
       })
     );
   };
+
+  // hightlight code
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.async = true;
+    script.src = `https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/prism.min.js`;
+    document.body.appendChild(script);
+  }, []);
 
   useEffect(() => {
     dispatch(fetchExerciseDetail({ exerciseId }));
@@ -195,19 +211,38 @@ const ExerciseDetail = (props) => {
   }, [dispatch, isSubmittingExercise_gs, submittedResult_gs]);
 
   return (
-    <Container>
+    <Container className={classes.root}>
       {!currentExercise_gs ? (
         <LoadingScreen />
       ) : (
         <Grid container spacing={2}>
-          <DialogToLogin needOpen={openLoginDialog_ls} setNeedOpen={setOpenLoginDialog_ls} />
+          <DialogToLogin
+            needOpen={openLoginDialog_ls}
+            setNeedOpen={setOpenLoginDialog_ls}
+            lastUrl={`${listRoute.exerciseDetailEndpoint}/${exerciseId}`}
+          />
           <Grid container item spacing={2} md={9} className={classes.contentWrap}>
             <Grid item xs={12}>
               <Paper className={classes.commonPaperWrap} elevation={5}>
                 <Typography variant="h4" color="primary" style={{ marginBottom: '2rem' }}>
                   {currentExercise_gs.title}
                 </Typography>
+
                 <div dangerouslySetInnerHTML={{ __html: currentExercise_gs.content }} />
+
+                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <Button
+                    color="primary"
+                    size="large"
+                    onClick={() =>
+                      routerHistory.push(`${listRoute.updateExerciseEndpoint}/${exerciseId}`, {
+                        action: EDIT_EXERCISE_ACTION.update,
+                      })
+                    }
+                  >
+                    Sửa bài
+                  </Button>
+                </div>
               </Paper>
             </Grid>
 
@@ -367,14 +402,17 @@ const ExerciseDetail = (props) => {
                   <Chip
                     style={{
                       backgroundColor:
-                        submittedResult_gs.totalScore === currentExercise_gs.point
+                        parseInt(submittedResult_gs.totalScore) ===
+                        parseInt(currentExercise_gs.point)
                           ? MUI_COLOR.success
                           : MUI_COLOR.warning,
                       color: '#fff',
                     }}
                     color="primary"
                     icon={<CheckCircleIcon color="action" />}
-                    label={`Kết quả: ${submittedResult_gs.totalScore}/${currentExercise_gs.point}`}
+                    label={`Kết quả: ${parseInt(submittedResult_gs.totalScore)}/${
+                      currentExercise_gs.point
+                    }`}
                   />
                 )}
               </Paper>
