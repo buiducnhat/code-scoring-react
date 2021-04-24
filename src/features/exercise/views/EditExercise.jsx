@@ -91,6 +91,8 @@ const EditExercise = (props) => {
   const isUpdatingExercise_gs = useSelector(
     (state) => state.exerciseSlice.isPendingFetchUpdateExercise
   );
+  const createExerciseMsg_gs = useSelector((state) => state.exerciseSlice.fetchCreateExerciseMsg);
+  const updateExerciseMsg_gs = useSelector((state) => state.exerciseSlice.fetchUpdateExerciseMsg);
 
   // local state
   const [content_ls, setContent_ls] = useState('');
@@ -126,7 +128,22 @@ const EditExercise = (props) => {
     } else if (action === EDIT_EXERCISE_ACTION.update && exerciseData) {
       dispatch(fetchUpdateExercise({ ...exerciseData, exerciseId }));
     }
-    // return;
+    dispatch(
+      setToast({
+        open:
+          (action === EDIT_EXERCISE_ACTION.create && !isCreatingExercise_gs) ||
+          (action === EDIT_EXERCISE_ACTION.update && !isUpdatingExercise_gs),
+        content:
+          action === EDIT_EXERCISE_ACTION.create
+            ? createExerciseMsg_gs || `Tạo bài tập mới thành công`
+            : updateExerciseMsg_gs || `Cập nhật bài tập thành công`,
+        type: createExerciseMsg_gs || updateExerciseMsg_gs ? 'danger' : 'success',
+        position: {
+          vertical: 'top',
+          horizontal: 'right',
+        },
+      })
+    );
   };
 
   useEffect(() => {
@@ -153,29 +170,11 @@ const EditExercise = (props) => {
     }
   }, [currentExercise_gs, action, languages_gs]);
 
-  // useEffect(() => {
-  //   setTestCases_ls(currentExercise_gs.testCases || []);
-  // }, [currentExercise_gs]);
-
   useEffect(() => {
     if (action === EDIT_EXERCISE_ACTION.create) {
       dispatch(resetCurrentExercise());
     }
   }, [dispatch, action]);
-
-  // useEffect(() => {
-  //   dispatch(
-  //     setToast({
-  //       open: !isCreatingExercise_gs,
-  //       content: 'Chạy code thành công, xem kết quả ở phần Test case!',
-  //       type: 'success',
-  //       position: {
-  //         vertical: 'top',
-  //         horizontal: 'right',
-  //       },
-  //     })
-  //   );
-  // }, []);
 
   return (
     <Container>
@@ -183,6 +182,8 @@ const EditExercise = (props) => {
         <LoadingScreen />
       ) : (
         <Grid container className={classes.root}>
+          <Toast />
+          
           <Grid item xs={12} className={classes.editorWrap}>
             <Formik
               initialValues={
@@ -211,7 +212,14 @@ const EditExercise = (props) => {
               })}
             >
               {(formikProp) => {
-                const { values, touched, errors, handleChange, handleBlur, handleSubmit } = formikProp;
+                const {
+                  values,
+                  touched,
+                  errors,
+                  handleChange,
+                  handleBlur,
+                  handleSubmit,
+                } = formikProp;
                 return (
                   <form onSubmit={handleSubmit}>
                     <Grid container spacing={2}>

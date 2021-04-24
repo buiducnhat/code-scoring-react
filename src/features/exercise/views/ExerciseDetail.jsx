@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router';
+import { Redirect } from 'react-router';
 import { makeStyles } from '@material-ui/core/styles';
 import {
   Avatar,
@@ -114,8 +114,6 @@ const useStyles = makeStyles((theme) => ({
 const ExerciseDetail = (props) => {
   const dispatch = useDispatch();
 
-  const routerHistory = useHistory();
-
   const classes = useStyles();
 
   // global state
@@ -138,6 +136,7 @@ const ExerciseDetail = (props) => {
   const [openSelect_ls, setOpenSelect_ls] = useState(false);
   const [openLoginDialog_ls, setOpenLoginDialog_ls] = useState(false);
   const isAuthor = userData_gs?.user_id === currentExercise_gs.created_by || false;
+  const [toRedirect_ls, setToRedirect_ls] = useState({ isNeeded: false, state: {}, url: '' });
 
   const handleUploadButton = () => {
     !isLoggedIn_gs && setOpenLoginDialog_ls(true);
@@ -219,6 +218,10 @@ const ExerciseDetail = (props) => {
     }
   }, [currentExercise_gs.content]);
 
+  if (toRedirect_ls.isNeeded === true) {
+    return <Redirect to={{ pathname: toRedirect_ls.url, state: toRedirect_ls.state }} />;
+  }
+
   return (
     <Container className={classes.root}>
       {!currentExercise_gs ? (
@@ -245,8 +248,10 @@ const ExerciseDetail = (props) => {
                       color="primary"
                       size="large"
                       onClick={() =>
-                        routerHistory.push(`${listRoute.updateExerciseEndpoint}/${exerciseId}`, {
-                          action: EDIT_EXERCISE_ACTION.update,
+                        setToRedirect_ls({
+                          isNeeded: true,
+                          url: `${listRoute.updateExerciseEndpoint}/${exerciseId}`,
+                          state: { action: EDIT_EXERCISE_ACTION.update },
                         })
                       }
                     >

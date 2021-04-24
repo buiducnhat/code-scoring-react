@@ -41,6 +41,9 @@ const useStyles = makeStyles((theme) => ({
   fullList: {
     width: 'auto',
   },
+  linkText: {
+    color: '#000',
+  },
 }));
 
 export default function CustomDrawer({ needOpen, setNeedOpen }) {
@@ -68,7 +71,7 @@ export default function CustomDrawer({ needOpen, setNeedOpen }) {
                 </Typography>
               </div>
             </ListItem>
-            <Link to={{ pathname: listRoute.login }} color="#000">
+            <Link to={{ pathname: listRoute.login }}>
               <ListItem
                 button
                 onClick={() => {
