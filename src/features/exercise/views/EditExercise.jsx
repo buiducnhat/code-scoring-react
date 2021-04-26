@@ -18,13 +18,17 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
+  FormControl,
+  Select,
+  MenuItem,
+  InputLabel,
   colors,
 } from '@material-ui/core';
 import { ExpandMore as ExpandIcon } from '@material-ui/icons';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 
-import { EDIT_EXERCISE_ACTION } from 'src/app/constants';
+import { EDIT_EXERCISE_ACTION, EXERCISE_STATUS } from 'src/app/constants';
 import { setToast } from 'src/features/ui/uiSlice';
 import {
   fetchCreateExercise,
@@ -98,7 +102,8 @@ const EditExercise = (props) => {
   const [content_ls, setContent_ls] = useState('');
   const [languages_ls, setLanguages_ls] = useState([]);
   const [languagesId_ls, setLanguagesId_ls] = useState([]);
-  const [testCases_ls, setTestCases_ls] = useState(currentExercise_gs.testCases || []);
+  const [testCases_ls, setTestCases_ls] = useState([]);
+  const [exerciseStatus_ls, setExerciseStatus_ls] = useState(EXERCISE_STATUS.public);
   const [currentTestCase_ls, setCurrentTestCase_ls] = useState({});
   const [openTestCaseDialog_ls, setOpenTestCaseDialog_ls] = useState(false);
 
@@ -116,18 +121,32 @@ const EditExercise = (props) => {
     setOpenTestCaseDialog_ls(false);
   };
 
+  const handleDeleteTestCase = (index) => {
+    let testCasesTemp = [...testCases_ls];
+    testCasesTemp.splice(index, 1);
+    setTestCases_ls(testCasesTemp);
+  };
+
+  const handleEditTestCase = (index, testCase) => {
+    setTestCases_ls(
+      testCases_ls.map((_testCase, _index) => (_index === index ? testCase : _testCase))
+    );
+  };
+
   const handleSubmit = (data) => {
     const exerciseData = Object.assign({}, data, {
       point: Number.parseInt(data.point),
       content: content_ls,
       languages: languagesId_ls,
       testCases: testCases_ls,
+      status: exerciseStatus_ls,
     });
     if (action === EDIT_EXERCISE_ACTION.create && exerciseData) {
       dispatch(fetchCreateExercise({ ...exerciseData }));
     } else if (action === EDIT_EXERCISE_ACTION.update && exerciseData) {
       dispatch(fetchUpdateExercise({ ...exerciseData, exerciseId }));
     }
+    // notify
     dispatch(
       setToast({
         open:
@@ -146,6 +165,7 @@ const EditExercise = (props) => {
     );
   };
 
+  // initial, if action is update -> fetch exerciseDetail to fill in form
   useEffect(() => {
     dispatch(fetchListLanguage());
     action === EDIT_EXERCISE_ACTION.update &&
@@ -153,6 +173,7 @@ const EditExercise = (props) => {
       dispatch(fetchExerciseDetail({ exerciseId }));
   }, [dispatch, action, exerciseId]);
 
+  // initial language, status, testCases
   useEffect(() => {
     if (action === EDIT_EXERCISE_ACTION.update) {
       setLanguages_ls(
@@ -160,21 +181,19 @@ const EditExercise = (props) => {
           currentExercise_gs.languages?.includes(language.language_id)
         )
       );
-      console.log(currentExercise_gs.languages);
       setLanguagesId_ls(
         currentExercise_gs.languages || languages_gs.map((language) => language.language_id)
       );
-    } else {
+      setExerciseStatus_ls(currentExercise_gs.status);
+      setTestCases_ls(currentExercise_gs.testCases);
+    } else if (action === EDIT_EXERCISE_ACTION.create) {
+      dispatch(resetCurrentExercise());
+      setExerciseStatus_ls(EXERCISE_STATUS.public);
+      setTestCases_ls([]);
       setLanguages_ls(languages_gs);
       setLanguagesId_ls(languages_gs.map((language) => language.language_id));
     }
-  }, [currentExercise_gs, action, languages_gs]);
-
-  useEffect(() => {
-    if (action === EDIT_EXERCISE_ACTION.create) {
-      dispatch(resetCurrentExercise());
-    }
-  }, [dispatch, action]);
+  }, [currentExercise_gs, action, languages_gs, dispatch]);
 
   return (
     <Container>
@@ -183,7 +202,7 @@ const EditExercise = (props) => {
       ) : (
         <Grid container className={classes.root}>
           <Toast />
-          
+
           <Grid item xs={12} className={classes.editorWrap}>
             <Formik
               initialValues={
@@ -191,13 +210,13 @@ const EditExercise = (props) => {
                   ? { ...currentExercise_gs }
                   : {
                       title: '',
-                      point: 0,
+                      point: '',
                       content: '',
                       testCases: [],
-                      languages: languagesId_ls || [],
+                      languages: languagesId_ls,
+                      status: exerciseStatus_ls,
                     }
               }
-              enableReinitialize
               onSubmit={handleSubmit}
               validationSchema={yup.object().shape({
                 title: yup
@@ -351,7 +370,7 @@ const EditExercise = (props) => {
                             >{`Test case`}</AccordionSummary>
                             <AccordionDetails>
                               <Box className={classes.testCase}>
-                                {testCases_ls.length > 0 &&
+                                {testCases_ls?.length > 0 &&
                                   testCases_ls.map((testCase, index) => (
                                     <Accordion key={index} variant="outlined">
                                       <AccordionSummary
@@ -363,27 +382,61 @@ const EditExercise = (props) => {
                                       <AccordionDetails
                                         style={{ backgroundColor: colors.grey[50] }}
                                       >
-                                        <Box>
-                                          <TextField
-                                            label="Input"
-                                            fullWidth
-                                            variant="outlined"
-                                            margin="normal"
-                                            inputProps={{
-                                              readOnly: true,
-                                            }}
-                                            value={testCase.input}
-                                          />
-                                          <TextField
-                                            label="Output"
-                                            fullWidth
-                                            variant="outlined"
-                                            margin="normal"
-                                            inputProps={{
-                                              readOnly: true,
-                                            }}
-                                            value={testCase.output}
-                                          />
+                                        <Box width="100%">
+                                          <Box>
+                                            <TextField
+                                              label="Input"
+                                              fullWidth
+                                              variant="outlined"
+                                              margin="normal"
+                                              value={testCase.input}
+                                              onChange={(event) =>
+                                                handleEditTestCase(index, {
+                                                  ...testCases_ls[index],
+                                                  input: event.target.value,
+                                                })
+                                              }
+                                            />
+                                            <TextField
+                                              label="Output"
+                                              fullWidth
+                                              variant="outlined"
+                                              margin="normal"
+                                              value={testCase.output}
+                                              onChange={(event) =>
+                                                handleEditTestCase(index, {
+                                                  ...testCases_ls[index],
+                                                  output: event.target.value,
+                                                })
+                                              }
+                                            />
+                                            <TextField
+                                              label="Giới hạn thời gian"
+                                              fullWidth
+                                              variant="outlined"
+                                              margin="normal"
+                                              value={testCase.limited_time}
+                                              onChange={(event) =>
+                                                handleEditTestCase(index, {
+                                                  ...testCases_ls[index],
+                                                  limitedTime: event.target.value,
+                                                })
+                                              }
+                                            />
+                                          </Box>
+                                          <Box
+                                            display="flex"
+                                            justifyContent="flex-end"
+                                            width="100%"
+                                          >
+                                            <Button
+                                              variant="outlined"
+                                              color="secondary"
+                                              onClick={() => handleDeleteTestCase(index)}
+                                            >
+                                              Xóa
+                                            </Button>
+                                          </Box>
                                         </Box>
                                       </AccordionDetails>
                                     </Accordion>
@@ -398,7 +451,28 @@ const EditExercise = (props) => {
                         <Editor content={currentExercise_gs.content} setContent={setContent_ls} />
                       </Grid>
 
-                      <Grid item xs={6}></Grid>
+                      <Grid item xs={6}>
+                        <FormControl variant="outlined" style={{ minWidth: 100 }}>
+                          <InputLabel id="exercise-status-label">Trạng thái</InputLabel>
+                          <Select
+                            labelId="exercise-status-label"
+                            label="Trạng thái"
+                            id="demo-simple-select"
+                            value={exerciseStatus_ls}
+                            onChange={(event) => setExerciseStatus_ls(event.target.value)}
+                          >
+                            {Object.entries(EXERCISE_STATUS).map((exerciseStatus) => (
+                              <MenuItem value={exerciseStatus[1]}>
+                                {exerciseStatus[1] === EXERCISE_STATUS.public
+                                  ? 'Công khai'
+                                  : exerciseStatus[1] === EXERCISE_STATUS.hiden
+                                  ? 'Ẩn'
+                                  : 'Xóa'}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      </Grid>
 
                       <Grid item container xs={6} direction="row" justify="flex-end">
                         <Button

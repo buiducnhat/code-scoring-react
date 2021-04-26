@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Redirect } from 'react-router-dom';
+import React from 'react';
+import { useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import { Box, Avatar, Card, Typography, CardContent, Grid } from '@material-ui/core';
 import { CalendarToday as CalendarIcon, FavoriteBorder as HeartIcon } from '@material-ui/icons';
@@ -39,15 +39,16 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const ExerciseBox = ({ id, title, author, updatedAt, point }) => {
+  const navigation = useHistory();
   const classes = useStyles();
 
   // Local state
-  const [redirectToDetail_ls, setRedirectToDetail_ls] = useState(false);
 
-  return redirectToDetail_ls ? (
-    <Redirect to={{ pathname: `${listRoute.exerciseEndpoint}/detail/${id}` }} />
-  ) : (
-    <Card onClick={() => setRedirectToDetail_ls(true)}>
+  return (
+    <Card
+      onClick={() => navigation.push(`${listRoute.exerciseEndpoint}/detail/${id}`)}
+      elevation={8}
+    >
       <CardContent className={classes.wrapper}>
         <Typography color="primary" variant="h3" className={classes.title}>
           {title}
@@ -55,7 +56,7 @@ const ExerciseBox = ({ id, title, author, updatedAt, point }) => {
         <Avatar
           alt="avatar"
           className={classes.avatar}
-          src={`https://i.pravatar.cc/150?u=${author}`}
+          src={`https://i.pravatar.cc/100?u=${author}`}
         />
         <Typography className={classes.author}>{author}</Typography>
         <Grid container alignItems="center" justify="center">

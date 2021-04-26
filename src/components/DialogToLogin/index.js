@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useHistory } from 'react-router-dom';
 import {
   Button,
   Dialog,
@@ -7,20 +8,17 @@ import {
   DialogContentText,
   DialogTitle,
 } from '@material-ui/core';
-import { Redirect } from 'react-router-dom';
 
 import { listRoute } from 'src/app/listRoute';
 
 export default function DialogToLogin({ needOpen, setNeedOpen, lastUrl }) {
-  const [needRedirect_ls, setNeedRedirect_ls] = useState(false);
+  const navigation = useHistory();
 
   const handleClose = () => {
     setNeedOpen(false);
   };
 
-  return needRedirect_ls ? (
-    <Redirect to={{ pathname: listRoute.login, state: { lastUrl } }} />
-  ) : (
+  return (
     <div>
       <Dialog open={needOpen} onClose={handleClose} aria-labelledby="form-dialog-title">
         <DialogTitle id="form-dialog-title">Chưa đăng nhập</DialogTitle>
@@ -33,7 +31,7 @@ export default function DialogToLogin({ needOpen, setNeedOpen, lastUrl }) {
           <Button onClick={handleClose} color="primary">
             Hủy
           </Button>
-          <Button color="primary" onClick={() => setNeedRedirect_ls(true)}>
+          <Button color="primary" onClick={() => navigation.push(listRoute.login, { lastUrl })}>
             Đăng nhập ngay
           </Button>
         </DialogActions>

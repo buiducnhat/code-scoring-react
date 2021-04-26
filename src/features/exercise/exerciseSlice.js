@@ -7,7 +7,14 @@ export const fetchListExercise = createAsyncThunk(
   ({ page, pageSize, order, title }, { rejectWithValue }) => {
     return new Promise(async (resolve, reject) => {
       try {
-        let response = await exerciseApi.listExercise({ page, pageSize, order, title });
+        const accessToken = localStorage.getItem('access-token');
+        let response = await exerciseApi.listExercise({
+          accessToken,
+          page,
+          pageSize,
+          order,
+          title,
+        });
 
         return resolve(response.data);
       } catch (error) {
@@ -117,7 +124,7 @@ export const fetchCreateExercise = createAsyncThunk(
 
 export const fetchUpdateExercise = createAsyncThunk(
   'exercise/fetchUpdateExercise',
-  ({ exerciseId, title, point, content, testCases, languages }, { rejectWithValue }) => {
+  ({ exerciseId, title, point, content, testCases, languages, status }, { rejectWithValue }) => {
     return new Promise(async (resolve, reject) => {
       try {
         const accessToken = localStorage.getItem('access-token');
@@ -129,6 +136,30 @@ export const fetchUpdateExercise = createAsyncThunk(
           content,
           testCases,
           languages,
+          status,
+        });
+
+        return resolve(response.data);
+      } catch (error) {
+        if (error.response) {
+          return reject(rejectWithValue(error.response.data));
+        }
+        return reject(error);
+      }
+    });
+  }
+);
+
+export const fetchUpdateExerciseStatus = createAsyncThunk(
+  'exercise/fetchUpdateExerciseStatus',
+  ({ exerciseId, status }, { rejectWithValue }) => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const accessToken = localStorage.getItem('access-token');
+        let response = await exerciseApi.updateExerciseStatus({
+          accessToken,
+          exerciseId,
+          status,
         });
 
         return resolve(response.data);
@@ -168,6 +199,9 @@ export const exerciseSlice = createSlice({
 
     fetchUpdateExerciseMsg: null,
     isPendingFetchUpdateExercise: false,
+
+    fetchUpdateExerciseStatusMsg: null,
+    isPendingFetchUpdateExerciseStatus: false,
   },
   reducers: {
     resetCurrentExercise(state) {
@@ -182,7 +216,8 @@ export const exerciseSlice = createSlice({
         state.isPendingFetchListExercise = true;
       })
       .addCase(fetchListExercise.fulfilled, (state, action) => {
-        state.exercises = action.payload;
+        state.total = action.payload.total;
+        state.exercises = action.payload.exercises;
         state.fetchListExerciseMsg = null;
         state.isPendingFetchListExercise = false;
       })
@@ -251,7 +286,7 @@ export const exerciseSlice = createSlice({
         state.isPendingFetchCreateExercise = false;
       })
 
-      // Handle fetch update exercise
+      // Handle fetch update exercise status
       .addCase(fetchUpdateExercise.pending, (state) => {
         state.fetchUpdateExerciseMsg = null;
         state.isPendingFetchUpdateExercise = true;

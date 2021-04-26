@@ -28,26 +28,10 @@ const App = () => {
         <Route exact path={listRoute.home} render={(props) => <ListExercise {...props} />} />
         <Route path={listRoute.login} render={(props) => <Login {...props} />} />
         <Route path={listRoute.register} render={(props) => <Register {...props} />} />
-        <Route
-          exact
-          path={listRoute.createExercise}
-          render={(props) => <EditExercise {...props} />}
-        />
-        <Route
-          exact
-          path={listRoute.updateExercise}
-          render={(props) => <EditExercise {...props} />}
-        />
-        <Route
-          exact
-          path={listRoute.exerciseDetail}
-          render={(props) => <ExerciseDetail {...props} />}
-        />
-        <Route
-          exact
-          path={listRoute.exerciseEndpoint}
-          render={(props) => <ListExercise {...props} />}
-        />
+        <Route path={listRoute.createExercise} render={(props) => <EditExercise {...props} />} />
+        <Route path={listRoute.updateExercise} render={(props) => <EditExercise {...props} />} />
+        <Route path={listRoute.exerciseDetail} render={(props) => <ExerciseDetail {...props} />} />
+        <Route path={listRoute.exerciseEndpoint} render={(props) => <ListExercise {...props} />} />
         <Route path="*" component={PageNotFound} />
       </Switch>
       <Copyright />

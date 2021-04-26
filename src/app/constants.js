@@ -14,6 +14,15 @@ export const ORDER_TYPE = {
   pointDESC: 6,
 };
 
+export const ORDER_TYPE_PARSED = {
+  timeASC: 'Cũ nhất',
+  timeDESC: 'Mới nhất',
+  nameASC: 'A-Z ▲',
+  nameDESC: 'Z-A ▼',
+  pointASC: 'Điểm ▲',
+  pointDESC: 'Điểm ▼',
+};
+
 export const PERMISSION = {
   createExercise: 'create exercise',
   updateExercise: 'update exercise',

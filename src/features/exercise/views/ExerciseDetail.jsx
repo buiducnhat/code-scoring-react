@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Redirect } from 'react-router';
+import { useHistory } from 'react-router';
 import { makeStyles } from '@material-ui/core/styles';
 import {
   Avatar,
@@ -21,6 +21,8 @@ import {
   Chip,
   LinearProgress,
   CircularProgress,
+  TextField,
+  colors,
 } from '@material-ui/core';
 import {
   ExpandMore as ExpandMoreIcon,
@@ -53,9 +55,6 @@ const useStyles = makeStyles((theme) => ({
       height: 'auto',
     },
   },
-  successBg: {
-    backgroundColor: theme.palette.success,
-  },
   commonPaperWrap: {
     padding: theme.spacing(4),
   },
@@ -68,16 +67,8 @@ const useStyles = makeStyles((theme) => ({
   testCase: {
     width: '100%',
   },
-  testCaseArea: {
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  ioArea: {
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  ioDataArea: {
-    backgroundColor: '#ecf0f1',
+  runData: {
+    backgroundColor: colors.grey[50],
     padding: theme.spacing(1),
     borderRadius: theme.spacing(0.5),
   },
@@ -91,7 +82,6 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(1),
     minWidth: 120,
   },
-  inputWrap: {},
   submitAreaButton: {
     margin: theme.spacing(1),
   },
@@ -113,6 +103,7 @@ const useStyles = makeStyles((theme) => ({
 
 const ExerciseDetail = (props) => {
   const dispatch = useDispatch();
+  const navigation = useHistory();
 
   const classes = useStyles();
 
@@ -136,7 +127,6 @@ const ExerciseDetail = (props) => {
   const [openSelect_ls, setOpenSelect_ls] = useState(false);
   const [openLoginDialog_ls, setOpenLoginDialog_ls] = useState(false);
   const isAuthor = userData_gs?.user_id === currentExercise_gs.created_by || false;
-  const [toRedirect_ls, setToRedirect_ls] = useState({ isNeeded: false, state: {}, url: '' });
 
   const handleUploadButton = () => {
     !isLoggedIn_gs && setOpenLoginDialog_ls(true);
@@ -218,10 +208,6 @@ const ExerciseDetail = (props) => {
     }
   }, [currentExercise_gs.content]);
 
-  if (toRedirect_ls.isNeeded === true) {
-    return <Redirect to={{ pathname: toRedirect_ls.url, state: toRedirect_ls.state }} />;
-  }
-
   return (
     <Container className={classes.root}>
       {!currentExercise_gs ? (
@@ -248,10 +234,8 @@ const ExerciseDetail = (props) => {
                       color="primary"
                       size="large"
                       onClick={() =>
-                        setToRedirect_ls({
-                          isNeeded: true,
-                          url: `${listRoute.updateExerciseEndpoint}/${exerciseId}`,
-                          state: { action: EDIT_EXERCISE_ACTION.update },
+                        navigation.push(`${listRoute.updateExerciseEndpoint}/${exerciseId}`, {
+                          action: EDIT_EXERCISE_ACTION.update,
                         })
                       }
                     >
@@ -273,52 +257,63 @@ const ExerciseDetail = (props) => {
                 <AccordionDetails>
                   <Box className={classes.testCase}>
                     {currentExercise_gs.testCases?.length &&
-                      currentExercise_gs.testCases.map((testCase, index) => {
-                        return (
-                          <Accordion key={index}>
-                            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                              <Typography>{`Test case ${index + 1}`}</Typography>
-                            </AccordionSummary>
-                            <AccordionDetails>
-                              <Box className={classes.testCaseArea}>
-                                <Box className={classes.ioArea} marginBottom={1}>
-                                  <Typography>{'Input:'}</Typography>
-                                  <Box className={classes.ioDataArea}>
-                                    <Typography className={classes.paragraph}>
-                                      {testCase.input.toString()}
-                                    </Typography>
-                                  </Box>
-                                </Box>
-                                <Box className={classes.ioArea}>
-                                  <Typography>{'Output:'}</Typography>
-                                  <Box className={classes.ioDataArea}>
-                                    <Typography className={classes.paragraph}>
-                                      {testCase.output.toString()}
-                                    </Typography>
-                                  </Box>
-                                </Box>
-                                {runResult_gs.length > 0 && (
-                                  <Box className={classes.ioArea}>
-                                    <Typography>{'Kết quả chạy:'}</Typography>
-                                    <Box className={classes.ioDataArea}>
-                                      <Typography className={classes.paragraph}>
-                                        {runResult_gs[index].userOutput.toString() ||
-                                          runResult_gs[index].error.toString() ||
-                                          null}
-                                      </Typography>
-                                      {runResult_gs[index].result ? (
-                                        <CheckIcon style={{ color: 'green' }} />
-                                      ) : (
-                                        <WrongIcon color="error" />
-                                      )}
-                                    </Box>
-                                  </Box>
-                                )}
+                      currentExercise_gs.testCases.map((testCase, index) => (
+                        <Accordion key={index}>
+                          <AccordionSummary
+                            expandIcon={<ExpandMoreIcon />}
+                            style={{ backgroundColor: colors.grey[50] }}
+                          >
+                            {`Test case ${index + 1}`}
+                          </AccordionSummary>
+                          <AccordionDetails>
+                            <Box width="100%">
+                              <Box>
+                                <TextField
+                                  label="Input"
+                                  fullWidth
+                                  variant="outlined"
+                                  margin="normal"
+                                  inputProps={{ readOnly: true }}
+                                  value={testCase.input}
+                                />
+                                <TextField
+                                  label="Output"
+                                  fullWidth
+                                  variant="outlined"
+                                  margin="normal"
+                                  inputProps={{ readOnly: true }}
+                                  value={testCase.output}
+                                />
+                                <TextField
+                                  label="Giới hạn thời gian (mili giây)"
+                                  fullWidth
+                                  variant="outlined"
+                                  margin="normal"
+                                  inputProps={{ readOnly: true }}
+                                  value={testCase.limited_time}
+                                />
                               </Box>
-                            </AccordionDetails>
-                          </Accordion>
-                        );
-                      })}
+                              {runResult_gs.length > 0 && (
+                                <Box>
+                                  <Typography>{'Kết quả chạy:'}</Typography>
+                                  <Box className={classes.runData}>
+                                    <Typography className={classes.paragraph}>
+                                      {runResult_gs[index].userOutput.toString() ||
+                                        runResult_gs[index].error.toString() ||
+                                        null}
+                                    </Typography>
+                                    {runResult_gs[index].result ? (
+                                      <CheckIcon style={{ color: 'green' }} />
+                                    ) : (
+                                      <WrongIcon color="error" />
+                                    )}
+                                  </Box>
+                                </Box>
+                              )}
+                            </Box>
+                          </AccordionDetails>
+                        </Accordion>
+                      ))}
                   </Box>
                 </AccordionDetails>
               </Accordion>

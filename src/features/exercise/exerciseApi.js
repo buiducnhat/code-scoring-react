@@ -5,7 +5,7 @@ import { SERVER_URL, ORDER_TYPE } from 'src/app/constants';
 const exerciseServerEndpoint = `${SERVER_URL}/exercises`;
 
 export const exerciseApi = {
-  listExercise: ({ page, pageSize, order, title }) => {
+  listExercise: ({ accessToken, page, pageSize, order, title }) => {
     page = page || 1;
     pageSize = pageSize || 10;
     order = order || ORDER_TYPE.timeDESC;
@@ -16,6 +16,7 @@ export const exerciseApi = {
       url: `${exerciseServerEndpoint}/list/?page=${page}&pageSize=${pageSize}&order=${order}&title=${title}`,
       headers: {
         'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
       },
     });
   },
@@ -49,7 +50,16 @@ export const exerciseApi = {
     });
   },
 
-  updateExercise: ({ accessToken, exerciseId, title, content, point, testCases, languages }) => {
+  updateExercise: ({
+    accessToken,
+    exerciseId,
+    title,
+    content,
+    point,
+    testCases,
+    languages,
+    status,
+  }) => {
     return axios({
       method: 'put',
       url: `${exerciseServerEndpoint}/update/${exerciseId}`,
@@ -63,6 +73,7 @@ export const exerciseApi = {
         point,
         testCases,
         languages,
+        status,
       },
     });
   },
