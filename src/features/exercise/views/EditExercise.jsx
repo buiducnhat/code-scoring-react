@@ -456,7 +456,7 @@ const EditExercise = (props) => {
                       <Grid item xs={12}>
                         <Editor
                           content={
-                            action === EDIT_EXERCISE_ACTION ? currentExercise_gs.content : ''
+                            action === EDIT_EXERCISE_ACTION.update ? currentExercise_gs.content : ''
                           }
                           setContent={setContent_ls}
                         />

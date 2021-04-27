@@ -271,6 +271,7 @@ const ExerciseDetail = (props) => {
                                 <TextField
                                   label="Input"
                                   fullWidth
+                                  multiline
                                   variant="outlined"
                                   margin="normal"
                                   inputProps={{ readOnly: true }}
@@ -279,6 +280,7 @@ const ExerciseDetail = (props) => {
                                 <TextField
                                   label="Output"
                                   fullWidth
+                                  multiline
                                   variant="outlined"
                                   margin="normal"
                                   inputProps={{ readOnly: true }}
@@ -293,21 +295,26 @@ const ExerciseDetail = (props) => {
                                   value={testCase.limited_time}
                                 />
                               </Box>
-                              {runResult_gs.length > 0 && (
+                              {runResult_gs?.length > 0 && (
                                 <Box>
-                                  <Typography>{'Kết quả chạy:'}</Typography>
-                                  <Box className={classes.runData}>
-                                    <Typography className={classes.paragraph}>
-                                      {runResult_gs[index].userOutput.toString() ||
-                                        runResult_gs[index].error.toString() ||
-                                        null}
-                                    </Typography>
-                                    {runResult_gs[index].result ? (
-                                      <CheckIcon style={{ color: 'green' }} />
-                                    ) : (
-                                      <WrongIcon color="error" />
-                                    )}
-                                  </Box>
+                                  <TextField
+                                    label="Kết quả chạy"
+                                    fullWidth
+                                    margin="normal"
+                                    multiline
+                                    variant="outlined"
+                                    inputProps={{ readOnly: true }}
+                                    value={
+                                      runResult_gs[index].userOutput ||
+                                      runResult_gs[index].error ||
+                                      null
+                                    }
+                                  />
+                                  {runResult_gs[index].result ? (
+                                    <CheckIcon style={{ color: 'green' }} />
+                                  ) : (
+                                    <WrongIcon color="error" />
+                                  )}
                                 </Box>
                               )}
                             </Box>
