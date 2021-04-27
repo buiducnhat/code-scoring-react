@@ -156,7 +156,7 @@ const EditExercise = (props) => {
           action === EDIT_EXERCISE_ACTION.create
             ? createExerciseMsg_gs || `Tạo bài tập mới thành công`
             : updateExerciseMsg_gs || `Cập nhật bài tập thành công`,
-        type: createExerciseMsg_gs || updateExerciseMsg_gs ? 'danger' : 'success',
+        type: createExerciseMsg_gs || updateExerciseMsg_gs ? 'error' : 'success',
         position: {
           vertical: 'top',
           horizontal: 'right',
@@ -164,6 +164,11 @@ const EditExercise = (props) => {
       })
     );
   };
+
+  // reset current exercise_gs
+  useEffect(() => {
+    action === EDIT_EXERCISE_ACTION.create && dispatch(resetCurrentExercise());
+  }, [action, dispatch]);
 
   // initial, if action is update -> fetch exerciseDetail to fill in form
   useEffect(() => {
@@ -187,13 +192,12 @@ const EditExercise = (props) => {
       setExerciseStatus_ls(currentExercise_gs.status);
       setTestCases_ls(currentExercise_gs.testCases);
     } else if (action === EDIT_EXERCISE_ACTION.create) {
-      dispatch(resetCurrentExercise());
       setExerciseStatus_ls(EXERCISE_STATUS.public);
       setTestCases_ls([]);
       setLanguages_ls(languages_gs);
       setLanguagesId_ls(languages_gs.map((language) => language.language_id));
     }
-  }, [currentExercise_gs, action, languages_gs, dispatch]);
+  }, [currentExercise_gs, action, languages_gs]);
 
   return (
     <Container>
@@ -310,6 +314,7 @@ const EditExercise = (props) => {
                               label="Input"
                               margin="normal"
                               fullWidth
+                              multiline
                               value={currentTestCase_ls.input}
                               onChange={(event) =>
                                 setCurrentTestCase_ls({
@@ -322,6 +327,7 @@ const EditExercise = (props) => {
                               label="Output"
                               margin="normal"
                               fullWidth
+                              multiline
                               value={currentTestCase_ls.output}
                               onChange={(event) =>
                                 setCurrentTestCase_ls({
@@ -375,18 +381,17 @@ const EditExercise = (props) => {
                                     <Accordion key={index} variant="outlined">
                                       <AccordionSummary
                                         expandIcon={<ExpandIcon />}
-                                        style={{ backgroundColor: colors.grey[100] }}
+                                        style={{ backgroundColor: colors.grey[50] }}
                                       >
                                         {`Test case ${index + 1}`}
                                       </AccordionSummary>
-                                      <AccordionDetails
-                                        style={{ backgroundColor: colors.grey[50] }}
-                                      >
+                                      <AccordionDetails>
                                         <Box width="100%">
                                           <Box>
                                             <TextField
                                               label="Input"
                                               fullWidth
+                                              multiline
                                               variant="outlined"
                                               margin="normal"
                                               value={testCase.input}
@@ -400,6 +405,7 @@ const EditExercise = (props) => {
                                             <TextField
                                               label="Output"
                                               fullWidth
+                                              multiline
                                               variant="outlined"
                                               margin="normal"
                                               value={testCase.output}
@@ -448,7 +454,12 @@ const EditExercise = (props) => {
                       </Grid>
 
                       <Grid item xs={12}>
-                        <Editor content={currentExercise_gs.content} setContent={setContent_ls} />
+                        <Editor
+                          content={
+                            action === EDIT_EXERCISE_ACTION ? currentExercise_gs.content : ''
+                          }
+                          setContent={setContent_ls}
+                        />
                       </Grid>
 
                       <Grid item xs={6}>

@@ -71,7 +71,7 @@ const ListExercise = () => {
             />
           </Grid>
           <Grid item xs={6} md={3} style={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <FormControl variant="outlined">
+            <FormControl variant="outlined" style={{ minWidth: 100 }}>
               <InputLabel id="page-size-label">Hiển thị</InputLabel>
               <Select
                 labelId="page-size-label"
@@ -127,7 +127,7 @@ const ListExercise = () => {
               color="primary"
               shape="rounded"
               page={page_ls}
-              count={parseInt(countExercises_gs / pageSize_ls + 1)}
+              count={Math.ceil(countExercises_gs / pageSize_ls)}
               onChange={(event, value) => setPage_ls(value)}
             />
           </Grid>

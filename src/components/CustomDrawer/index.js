@@ -108,19 +108,21 @@ export default function CustomDrawer({ needOpen, setNeedOpen }) {
           </ListItem>
         </Link>
 
-        <Link
-          to={{
-            pathname: listRoute.createExercise,
-            state: { action: EDIT_EXERCISE_ACTION.create },
-          }}
-        >
-          <ListItem button>
-            <ListItemIcon>
-              <CreateIcon color="primary" />
-            </ListItemIcon>
-            <ListItemText primary={'Tạo bài tập'} />
-          </ListItem>
-        </Link>
+        {
+          <Link
+            to={{
+              pathname: listRoute.createExercise,
+              state: { action: EDIT_EXERCISE_ACTION.create },
+            }}
+          >
+            <ListItem button>
+              <ListItemIcon>
+                <CreateIcon color="primary" />
+              </ListItemIcon>
+              <ListItemText primary={'Tạo bài tập'} />
+            </ListItem>
+          </Link>
+        }
       </List>
     </div>
   );
