@@ -379,10 +379,7 @@ const EditExercise = (props) => {
                                 {testCases_ls?.length > 0 &&
                                   testCases_ls.map((testCase, index) => (
                                     <Accordion key={index} variant="outlined">
-                                      <AccordionSummary
-                                        expandIcon={<ExpandIcon />}
-                                        style={{ backgroundColor: colors.grey[50] }}
-                                      >
+                                      <AccordionSummary expandIcon={<ExpandIcon />}>
                                         {`Test case ${index + 1}`}
                                       </AccordionSummary>
                                       <AccordionDetails>

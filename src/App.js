@@ -1,7 +1,10 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
+import { ThemeProvider } from '@material-ui/styles';
+import { createMuiTheme } from '@material-ui/core';
+import { useDispatch, useSelector } from 'react-redux';
 import { Route, Switch } from 'react-router-dom';
 
+import LoadingScreen from 'src/components/LoadingScreen';
 import Login from 'src/features/authen/views/Login';
 import Register from 'src/features/authen/views/Register';
 import ListExercise from 'src/features/exercise/views/ListExercise';
@@ -17,12 +20,23 @@ import './App.scss';
 const App = () => {
   const dispatch = useDispatch();
 
+  // global states
+  const theme_gs = useSelector((state) => state.uiSlice.theme);
+
+  const theme = createMuiTheme({
+    palette: {
+      type: theme_gs.type,
+    },
+  });
+
   React.useEffect(() => {
     dispatch(fetchGetUserData());
   }, [dispatch]);
 
-  return (
-    <React.Fragment>
+  return !theme_gs ? (
+    <LoadingScreen />
+  ) : (
+    <ThemeProvider theme={theme}>
       <Header />
       <Switch>
         <Route exact path={listRoute.home} render={(props) => <ListExercise {...props} />} />
@@ -35,7 +49,7 @@ const App = () => {
         <Route path="*" component={PageNotFound} />
       </Switch>
       <Copyright />
-    </React.Fragment>
+    </ThemeProvider>
   );
 };
 

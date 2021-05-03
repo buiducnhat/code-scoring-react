@@ -1,10 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+import { APP_THEME } from 'src/app/constants';
+
 export const uiSlice = createSlice({
   name: 'ui',
   initialState: {
-    variantTheme: {
-      type: 'light',
+    theme: {
+      type: APP_THEME.light,
     },
     toast: {
       open: false,
@@ -20,12 +22,12 @@ export const uiSlice = createSlice({
     setToast(state, action) {
       state.toast = { ...action.payload };
     },
-    setVariantTheme(state, action) {
-      state.variantTheme.type = 'dark';
+    setTheme(state, action) {
+      state.theme = { ...action.payload };
     },
   },
 });
 
-export const { setToast } = uiSlice.actions;
+export const { setToast, setTheme } = uiSlice.actions;
 
 export default uiSlice.reducer;

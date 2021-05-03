@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import {
   Drawer,
@@ -11,6 +11,8 @@ import {
   Avatar,
   Typography,
   Divider,
+  FormControlLabel,
+  Switch,
 } from '@material-ui/core';
 import {
   ExitToApp as LogInIcon,
@@ -20,9 +22,10 @@ import {
 } from '@material-ui/icons';
 
 import useCheckLogin from 'src/hooks/useCheckLogIn';
+import { setTheme } from 'src/features/ui/uiSlice';
 import { logout } from 'src/features/authen/authenSlice';
 import { listRoute } from 'src/app/listRoute';
-import { EDIT_EXERCISE_ACTION } from 'src/app/constants';
+import { EDIT_EXERCISE_ACTION, APP_THEME } from 'src/app/constants';
 
 const useStyles = makeStyles((theme) => ({
   list: {
@@ -52,6 +55,7 @@ export default function CustomDrawer({ needOpen, setNeedOpen }) {
   const classes = useStyles();
 
   // global state
+  const theme_gs = useSelector((state) => state.uiSlice.theme);
   const [isLoggedIn_gs, userData_gs] = useCheckLogin();
 
   const list = () => (
@@ -123,6 +127,22 @@ export default function CustomDrawer({ needOpen, setNeedOpen }) {
             </ListItem>
           </Link>
         }
+
+        <FormControlLabel
+          control={
+            <Switch
+              checked={theme_gs.type === APP_THEME.dark}
+              onChange={() =>
+                dispatch(
+                  setTheme({
+                    type: theme_gs.type === APP_THEME.light ? APP_THEME.dark : APP_THEME.light,
+                  })
+                )
+              }
+            />
+          }
+          label="Giao diện tối"
+        />
       </List>
     </div>
   );

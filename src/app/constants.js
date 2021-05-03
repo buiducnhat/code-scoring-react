@@ -69,3 +69,8 @@ export const EDIT_EXERCISE_ACTION = {
   create: 1,
   update: 2,
 };
+
+export const APP_THEME = {
+  light: 'light',
+  dark: 'dark',
+};

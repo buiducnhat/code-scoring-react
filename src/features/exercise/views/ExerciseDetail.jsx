@@ -67,14 +67,6 @@ const useStyles = makeStyles((theme) => ({
   testCase: {
     width: '100%',
   },
-  runData: {
-    backgroundColor: colors.grey[50],
-    padding: theme.spacing(1),
-    borderRadius: theme.spacing(0.5),
-  },
-  paragraph: {
-    whiteSpace: 'pre-wrap',
-  },
   submitArea: {
     marginTop: theme.spacing(2),
   },
@@ -259,10 +251,7 @@ const ExerciseDetail = (props) => {
                     {currentExercise_gs.testCases?.length &&
                       currentExercise_gs.testCases.map((testCase, index) => (
                         <Accordion key={index}>
-                          <AccordionSummary
-                            expandIcon={<ExpandMoreIcon />}
-                            style={{ backgroundColor: colors.grey[50] }}
-                          >
+                          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                             {`Test case ${index + 1}`}
                           </AccordionSummary>
                           <AccordionDetails>
