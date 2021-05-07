@@ -207,6 +207,10 @@ export const exerciseSlice = createSlice({
     resetCurrentExercise(state) {
       state.currentExercise = {};
     },
+    resetRunAndSubmit(state) {
+      state.runResult = [];
+      state.submittedResult = {};
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -303,6 +307,6 @@ export const exerciseSlice = createSlice({
   },
 });
 
-export const { resetCurrentExercise } = exerciseSlice.actions;
+export const { resetCurrentExercise, resetRunAndSubmit } = exerciseSlice.actions;
 
 export default exerciseSlice.reducer;

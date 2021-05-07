@@ -34,6 +34,7 @@ import {
   Person as PersonIcon,
 } from '@material-ui/icons';
 
+import { exerciseApi } from 'src/features/exercise/exerciseApi';
 import { listRoute } from 'src/app/listRoute';
 import useCheckLogIn from 'src/hooks/useCheckLogIn';
 import { MUI_COLOR, EDIT_EXERCISE_ACTION } from 'src/app/constants';
@@ -41,6 +42,7 @@ import {
   fetchExerciseDetail,
   fetchSubmitExercise,
   fetchRunExercise,
+  resetRunAndSubmit,
 } from 'src/features/exercise/exerciseSlice';
 import { fetchListLanguage } from 'src/features/language/languageSlice';
 import { setToast } from 'src/features/ui/uiSlice';
@@ -119,6 +121,7 @@ const ExerciseDetail = (props) => {
   const [openSelect_ls, setOpenSelect_ls] = useState(false);
   const [openLoginDialog_ls, setOpenLoginDialog_ls] = useState(false);
   const isAuthor = userData_gs?.user_id === currentExercise_gs.created_by || false;
+  const [currentResult_ls, setCurrentResult_ls] = useState(null);
 
   const handleUploadButton = () => {
     !isLoggedIn_gs && setOpenLoginDialog_ls(true);
@@ -150,11 +153,18 @@ const ExerciseDetail = (props) => {
     );
   };
 
+  // reset run and submit in testcases
+  useEffect(() => {
+    dispatch(resetRunAndSubmit());
+  }, [dispatch]);
+
+  // fetch exercise detail and language
   useEffect(() => {
     dispatch(fetchExerciseDetail({ exerciseId }));
     dispatch(fetchListLanguage());
   }, [dispatch, exerciseId]);
 
+  // use effect for toast when run code
   useEffect(() => {
     dispatch(
       setToast({
@@ -169,6 +179,7 @@ const ExerciseDetail = (props) => {
     );
   }, [dispatch, isRunningExercise_gs, runResult_gs.length]);
 
+  // use effect for toast when submit
   useEffect(() => {
     dispatch(
       setToast({
@@ -183,6 +194,7 @@ const ExerciseDetail = (props) => {
     );
   }, [dispatch, isSubmittingExercise_gs, submittedResult_gs]);
 
+  // set highlight for code in content
   useEffect(() => {
     const script = document.createElement('script');
     const script2 = document.createElement('script');
@@ -199,6 +211,17 @@ const ExerciseDetail = (props) => {
       };
     }
   }, [currentExercise_gs.content]);
+
+  // fetch result of exercise
+  useEffect(() => {
+    exerciseApi
+      .getResultOfExerciseByUser({
+        accessToken: localStorage.getItem('access-token'),
+        exerciseId,
+      })
+      .then((response) => setCurrentResult_ls(response.data));
+    // .catch(error=);
+  }, [exerciseId]);
 
   return (
     <Container className={classes.root}>
@@ -281,7 +304,7 @@ const ExerciseDetail = (props) => {
                                   variant="outlined"
                                   margin="normal"
                                   inputProps={{ readOnly: true }}
-                                  value={testCase.limited_time}
+                                  value={testCase.limited_time || ''}
                                 />
                               </Box>
                               {runResult_gs?.length > 0 && (
@@ -424,7 +447,51 @@ const ExerciseDetail = (props) => {
                 )}
               </Paper>
             </Grid>
-            <Grid item xs={12}></Grid>
+            <Grid item xs={12}>
+              <Paper className={classes.commonPaperWrap} elevation={5}>
+                <Accordion>
+                  <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                    <Typography>Kết quả đã nộp</Typography>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <Box
+                      display="flex"
+                      flexDirection="column"
+                      justifyContent="center"
+                      alignItems="center"
+                    >
+                      {currentResult_ls &&
+                        currentResult_ls.testCase.map((testCase, index) => (
+                          <Box
+                            display="flex"
+                            flexDirection="row"
+                            alignItems="center"
+                            justifyContent="center"
+                          >
+                            <Typography>{`Test case ${index + 1}:`}</Typography>
+                            {testCase.check ? (
+                              <CheckIcon style={{ color: 'green' }} />
+                            ) : (
+                              <WrongIcon color="error" />
+                            )}
+                          </Box>
+                        ))}
+                      <Box
+                        display="flex"
+                        flexDirection="row"
+                        alignItems="center"
+                        justifyContent="center"
+                        marginTop={2}
+                      >
+                        <Typography style={{ color: colors.deepPurple[500] }}>{`Điểm: ${
+                          currentResult_ls && currentResult_ls.totalScore
+                        }/${currentExercise_gs.point}`}</Typography>
+                      </Box>
+                    </Box>
+                  </AccordionDetails>
+                </Accordion>
+              </Paper>
+            </Grid>
           </Grid>
         </Grid>
       )}

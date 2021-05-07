@@ -125,4 +125,26 @@ export const exerciseApi = {
       data: formData,
     });
   },
+
+  getResultByUser: ({ accessToken }) => {
+    return axios({
+      method: 'get',
+      url: `${SERVER_URL}/results/user`,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+  },
+
+  getResultOfExerciseByUser: ({ accessToken, exerciseId }) => {
+    return axios({
+      method: 'get',
+      url: `${SERVER_URL}/results/user/exercise/${exerciseId}`,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+  },
 };
