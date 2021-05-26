@@ -2,5 +2,5 @@
   "compilerOptions": {
     "baseUrl": "."
   },
-  "include": ["src", "public/prismjs"]
+  "include": ["src", "public/prismjs", "public/electron.js"]
 }
