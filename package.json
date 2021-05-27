@@ -23,6 +23,7 @@
     "yup": "^0.32.9"
   },
   "main": "public/electron.js",
+  "homepage": ".",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
