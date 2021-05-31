@@ -13,6 +13,7 @@ import {
   Divider,
   FormControlLabel,
   Switch,
+  useTheme,
 } from '@material-ui/core';
 import {
   ExitToApp as LogInIcon,
@@ -41,16 +42,14 @@ const useStyles = makeStyles((theme) => ({
     height: theme.spacing(8),
     margin: theme.spacing(2),
   },
-  fullList: {
-    width: 'auto',
-  },
-
   link: {
-    color: theme.palette.text,
+    color: theme.palette.text.primary,
   },
 }));
 
 export default function CustomDrawer({ needOpen, setNeedOpen }) {
+  const theme = useTheme();
+
   const dispatch = useDispatch();
 
   const classes = useStyles();
@@ -76,75 +75,78 @@ export default function CustomDrawer({ needOpen, setNeedOpen }) {
                 </Typography>
               </div>
             </ListItem>
-
-            <ListItem
-              button
-              onClick={() => {
-                dispatch(logout());
-                setNeedOpen(false);
-              }}
-            >
-              <ListItemIcon>
-                <LogOutIcon color="secondary" />
-              </ListItemIcon>
-              <ListItemText primary={<Link to={{ pathname: listRoute.login }}>Đăng xuất</Link>} />
-            </ListItem>
+            <Link to={{ pathname: listRoute.login }} className={classes.link}>
+              <ListItem
+                button
+                onClick={() => {
+                  dispatch(logout());
+                  setNeedOpen(false);
+                }}
+              >
+                <ListItemIcon>
+                  <LogOutIcon color="secondary" />
+                </ListItemIcon>
+                <ListItemText primary={'Đăng xuất'} />
+              </ListItem>
+            </Link>
           </React.Fragment>
         ) : (
-          <ListItem button>
-            <ListItemIcon>
-              <LogInIcon color="primary" />
-            </ListItemIcon>
-            <ListItemText primary={<Link to={{ pathname: listRoute.login }}>Đăng nhập</Link>} />
-          </ListItem>
+          <Link to={{ pathname: listRoute.login }} className={classes.link}>
+            <ListItem button>
+              <ListItemIcon>
+                <LogInIcon color="primary" />
+              </ListItemIcon>
+              <ListItemText primary={'Đăng nhập'} />
+            </ListItem>
+          </Link>
         )}
 
         <Divider />
 
-        <ListItem button>
-          <ListItemIcon>
-            <HomeIcon color="primary" />
-          </ListItemIcon>
-          <ListItemText
-            color="secondary"
-            primary={<Link to={{ pathname: listRoute.home }}>Trang chủ</Link>}
-          />
-        </ListItem>
+        <Link to={{ pathname: listRoute.home }} className={classes.link}>
+          <ListItem button>
+            <ListItemIcon>
+              <HomeIcon color="primary" />
+            </ListItemIcon>
+            <ListItemText primary={'Trang chủ'} />
+          </ListItem>
+        </Link>
 
-        <ListItem button>
-          <ListItemIcon>
-            <CreateIcon color="primary" />
-          </ListItemIcon>
-          <ListItemText
-            primary={
-              <Link
-                to={{
-                  pathname: listRoute.createExercise,
-                  state: { action: EDIT_EXERCISE_ACTION.create },
-                }}
-              >
-                Tạo bài tập
-              </Link>
+        {
+          <Link
+            to={{
+              pathname: listRoute.createExercise,
+              state: { action: EDIT_EXERCISE_ACTION.create },
+            }}
+            className={classes.link}
+          >
+            <ListItem button>
+              <ListItemIcon>
+                <CreateIcon color="primary" />
+              </ListItemIcon>
+              <ListItemText primary={'Tạo bài tập'} />
+            </ListItem>
+          </Link>
+        }
+
+        <ListItem>
+          <FormControlLabel
+            control={
+              <Switch
+                color="primary"
+                checked={theme_gs.type === APP_THEME.dark}
+                onChange={() =>
+                  dispatch(
+                    setTheme({
+                      type: theme_gs.type === APP_THEME.light ? APP_THEME.dark : APP_THEME.light,
+                    })
+                  )
+                }
+              />
             }
+            label="Giao diện tối"
           />
         </ListItem>
-
-        <FormControlLabel
-          control={
-            <Switch
-              color="secondary"
-              checked={theme_gs.type === APP_THEME.dark}
-              onChange={() =>
-                dispatch(
-                  setTheme({
-                    type: theme_gs.type === APP_THEME.light ? APP_THEME.dark : APP_THEME.light,
-                  })
-                )
-              }
-            />
-          }
-          label="Giao diện tối"
-        />
       </List>
     </div>
   );
