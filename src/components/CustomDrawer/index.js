@@ -13,7 +13,6 @@ import {
   Divider,
   FormControlLabel,
   Switch,
-  useTheme,
 } from '@material-ui/core';
 import {
   ExitToApp as LogInIcon,
@@ -48,8 +47,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function CustomDrawer({ needOpen, setNeedOpen }) {
-  const theme = useTheme();
-
   const dispatch = useDispatch();
 
   const classes = useStyles();
@@ -65,11 +62,7 @@ export default function CustomDrawer({ needOpen, setNeedOpen }) {
           <React.Fragment>
             <ListItem button>
               <div className={classes.userInfo}>
-                <Avatar
-                  alt="avatar"
-                  src={`https://i.pravatar.cc/150?u=${userData_gs.name}`}
-                  className={classes.avatar}
-                />
+                <Avatar alt="avatar" src={userData_gs.avatar} className={classes.avatar} />
                 <Typography variant="h6" color="primary">
                   {userData_gs.name}
                 </Typography>

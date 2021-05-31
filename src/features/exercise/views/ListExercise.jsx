@@ -114,6 +114,7 @@ const ListExercise = () => {
                       id={exercise.exercise_id}
                       title={exercise.title}
                       author={exercise.author}
+                      authorAvatar={exercise.author_avatar}
                       updatedAt={exercise.updated_at}
                       point={exercise.point}
                     />

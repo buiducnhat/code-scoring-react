@@ -415,8 +415,9 @@ const ExerciseDetail = (props) => {
             <Grid item xs={12}>
               <Paper className={[classes.commonPaperWrap, classes.extraInfo]} elevation={5}>
                 <Avatar
+                  alt="avatar"
                   className={classes.avatar}
-                  src={`https://i.pravatar.cc/150?u=${currentExercise_gs.author}`}
+                  src={currentExercise_gs.author_avatar}
                 />
                 <Chip
                   style={{ marginBottom: '1rem' }}
