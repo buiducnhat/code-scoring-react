@@ -22,7 +22,6 @@ import {
   Select,
   MenuItem,
   InputLabel,
-  colors,
 } from '@material-ui/core';
 import { ExpandMore as ExpandIcon } from '@material-ui/icons';
 import { Formik } from 'formik';
@@ -235,14 +234,8 @@ const EditExercise = (props) => {
               })}
             >
               {(formikProp) => {
-                const {
-                  values,
-                  touched,
-                  errors,
-                  handleChange,
-                  handleBlur,
-                  handleSubmit,
-                } = formikProp;
+                const { values, touched, errors, handleChange, handleBlur, handleSubmit } =
+                  formikProp;
                 return (
                   <form onSubmit={handleSubmit}>
                     <Grid container spacing={2}>

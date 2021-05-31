@@ -1,6 +1,7 @@
 import React from 'react';
 import { ThemeProvider } from '@material-ui/styles';
-import { createMuiTheme } from '@material-ui/core';
+import * as colors from '@material-ui/core/colors';
+import { createMuiTheme, CssBaseline } from '@material-ui/core';
 import { useDispatch, useSelector } from 'react-redux';
 import { Route, Switch } from 'react-router-dom';
 
@@ -23,11 +24,21 @@ const App = () => {
   // global states
   const theme_gs = useSelector((state) => state.uiSlice.theme);
 
-  const theme = createMuiTheme({
-    palette: {
-      type: theme_gs.type,
-    },
-  });
+  const theme = React.useMemo(
+    () =>
+      createMuiTheme({
+        palette: {
+          type: theme_gs.type,
+          primary: {
+            main: colors.blue[500],
+          },
+          secondary: {
+            main: colors.deepOrange[500],
+          },
+        },
+      }),
+    [theme_gs]
+  );
 
   React.useEffect(() => {
     dispatch(fetchGetUserData());
@@ -37,6 +48,7 @@ const App = () => {
     <LoadingScreen />
   ) : (
     <ThemeProvider theme={theme}>
+      <CssBaseline />
       <Header />
       <Switch>
         <Route exact path={listRoute.home} render={(props) => <ListExercise {...props} />} />

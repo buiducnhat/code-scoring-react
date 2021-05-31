@@ -44,8 +44,9 @@ const useStyles = makeStyles((theme) => ({
   fullList: {
     width: 'auto',
   },
-  linkText: {
-    color: '#000',
+
+  link: {
+    color: theme.palette.text,
   },
 }));
 
@@ -75,62 +76,63 @@ export default function CustomDrawer({ needOpen, setNeedOpen }) {
                 </Typography>
               </div>
             </ListItem>
-            <Link to={{ pathname: listRoute.login }}>
-              <ListItem
-                button
-                onClick={() => {
-                  dispatch(logout());
-                  setNeedOpen(false);
-                }}
-              >
-                <ListItemIcon>
-                  <LogOutIcon color="secondary" />
-                </ListItemIcon>
-                <ListItemText primary={'Đăng xuất'} />
-              </ListItem>
-            </Link>
+
+            <ListItem
+              button
+              onClick={() => {
+                dispatch(logout());
+                setNeedOpen(false);
+              }}
+            >
+              <ListItemIcon>
+                <LogOutIcon color="secondary" />
+              </ListItemIcon>
+              <ListItemText primary={<Link to={{ pathname: listRoute.login }}>Đăng xuất</Link>} />
+            </ListItem>
           </React.Fragment>
         ) : (
-          <Link to={{ pathname: listRoute.login }}>
-            <ListItem button>
-              <ListItemIcon>
-                <LogInIcon color="primary" />
-              </ListItemIcon>
-              <ListItemText primary={'Đăng nhập'} />
-            </ListItem>
-          </Link>
+          <ListItem button>
+            <ListItemIcon>
+              <LogInIcon color="primary" />
+            </ListItemIcon>
+            <ListItemText primary={<Link to={{ pathname: listRoute.login }}>Đăng nhập</Link>} />
+          </ListItem>
         )}
 
         <Divider />
 
-        <Link to={{ pathname: listRoute.home }}>
-          <ListItem button>
-            <ListItemIcon>
-              <HomeIcon color="primary" />
-            </ListItemIcon>
-            <ListItemText primary={'Trang chủ'} />
-          </ListItem>
-        </Link>
+        <ListItem button>
+          <ListItemIcon>
+            <HomeIcon color="primary" />
+          </ListItemIcon>
+          <ListItemText
+            color="secondary"
+            primary={<Link to={{ pathname: listRoute.home }}>Trang chủ</Link>}
+          />
+        </ListItem>
 
-        {
-          <Link
-            to={{
-              pathname: listRoute.createExercise,
-              state: { action: EDIT_EXERCISE_ACTION.create },
-            }}
-          >
-            <ListItem button>
-              <ListItemIcon>
-                <CreateIcon color="primary" />
-              </ListItemIcon>
-              <ListItemText primary={'Tạo bài tập'} />
-            </ListItem>
-          </Link>
-        }
+        <ListItem button>
+          <ListItemIcon>
+            <CreateIcon color="primary" />
+          </ListItemIcon>
+          <ListItemText
+            primary={
+              <Link
+                to={{
+                  pathname: listRoute.createExercise,
+                  state: { action: EDIT_EXERCISE_ACTION.create },
+                }}
+              >
+                Tạo bài tập
+              </Link>
+            }
+          />
+        </ListItem>
 
         <FormControlLabel
           control={
             <Switch
+              color="secondary"
               checked={theme_gs.type === APP_THEME.dark}
               onChange={() =>
                 dispatch(
