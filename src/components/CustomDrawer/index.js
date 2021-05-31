@@ -41,11 +41,8 @@ const useStyles = makeStyles((theme) => ({
     height: theme.spacing(8),
     margin: theme.spacing(2),
   },
-  fullList: {
-    width: 'auto',
-  },
-  linkText: {
-    color: '#000',
+  link: {
+    color: theme.palette.text.primary,
   },
 }));
 
@@ -65,17 +62,13 @@ export default function CustomDrawer({ needOpen, setNeedOpen }) {
           <React.Fragment>
             <ListItem button>
               <div className={classes.userInfo}>
-                <Avatar
-                  alt="avatar"
-                  src={`https://i.pravatar.cc/150?u=${userData_gs.name}`}
-                  className={classes.avatar}
-                />
+                <Avatar alt="avatar" src={userData_gs.avatar} className={classes.avatar} />
                 <Typography variant="h6" color="primary">
                   {userData_gs.name}
                 </Typography>
               </div>
             </ListItem>
-            <Link to={{ pathname: listRoute.login }}>
+            <Link to={{ pathname: listRoute.login }} className={classes.link}>
               <ListItem
                 button
                 onClick={() => {
@@ -91,7 +84,7 @@ export default function CustomDrawer({ needOpen, setNeedOpen }) {
             </Link>
           </React.Fragment>
         ) : (
-          <Link to={{ pathname: listRoute.login }}>
+          <Link to={{ pathname: listRoute.login }} className={classes.link}>
             <ListItem button>
               <ListItemIcon>
                 <LogInIcon color="primary" />
@@ -103,7 +96,7 @@ export default function CustomDrawer({ needOpen, setNeedOpen }) {
 
         <Divider />
 
-        <Link to={{ pathname: listRoute.home }}>
+        <Link to={{ pathname: listRoute.home }} className={classes.link}>
           <ListItem button>
             <ListItemIcon>
               <HomeIcon color="primary" />
@@ -118,6 +111,7 @@ export default function CustomDrawer({ needOpen, setNeedOpen }) {
               pathname: listRoute.createExercise,
               state: { action: EDIT_EXERCISE_ACTION.create },
             }}
+            className={classes.link}
           >
             <ListItem button>
               <ListItemIcon>
@@ -128,21 +122,24 @@ export default function CustomDrawer({ needOpen, setNeedOpen }) {
           </Link>
         }
 
-        <FormControlLabel
-          control={
-            <Switch
-              checked={theme_gs.type === APP_THEME.dark}
-              onChange={() =>
-                dispatch(
-                  setTheme({
-                    type: theme_gs.type === APP_THEME.light ? APP_THEME.dark : APP_THEME.light,
-                  })
-                )
-              }
-            />
-          }
-          label="Giao diện tối"
-        />
+        <ListItem>
+          <FormControlLabel
+            control={
+              <Switch
+                color="primary"
+                checked={theme_gs.type === APP_THEME.dark}
+                onChange={() =>
+                  dispatch(
+                    setTheme({
+                      type: theme_gs.type === APP_THEME.light ? APP_THEME.dark : APP_THEME.light,
+                    })
+                  )
+                }
+              />
+            }
+            label="Giao diện tối"
+          />
+        </ListItem>
       </List>
     </div>
   );

@@ -22,7 +22,7 @@ import {
   LinearProgress,
   CircularProgress,
   TextField,
-  colors,
+  useTheme,
 } from '@material-ui/core';
 import {
   ExpandMore as ExpandMoreIcon,
@@ -96,6 +96,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const ExerciseDetail = (props) => {
+  const theme = useTheme();
+
   const dispatch = useDispatch();
   const navigation = useHistory();
 
@@ -323,7 +325,7 @@ const ExerciseDetail = (props) => {
                                     }
                                   />
                                   {runResult_gs[index].result ? (
-                                    <CheckIcon style={{ color: 'green' }} />
+                                    <CheckIcon style={{ color: theme.palette.success }} />
                                   ) : (
                                     <WrongIcon color="error" />
                                   )}
@@ -413,8 +415,9 @@ const ExerciseDetail = (props) => {
             <Grid item xs={12}>
               <Paper className={[classes.commonPaperWrap, classes.extraInfo]} elevation={5}>
                 <Avatar
+                  alt="avatar"
                   className={classes.avatar}
-                  src={`https://i.pravatar.cc/150?u=${currentExercise_gs.author}`}
+                  src={currentExercise_gs.author_avatar}
                 />
                 <Chip
                   style={{ marginBottom: '1rem' }}
@@ -470,23 +473,25 @@ const ExerciseDetail = (props) => {
                           >
                             <Typography>{`Test case ${index + 1}:`}</Typography>
                             {testCase.check ? (
-                              <CheckIcon style={{ color: 'green' }} />
+                              <CheckIcon style={{ color: theme.palette.success }} />
                             ) : (
                               <WrongIcon color="error" />
                             )}
                           </Box>
                         ))}
-                      <Box
-                        display="flex"
-                        flexDirection="row"
-                        alignItems="center"
-                        justifyContent="center"
-                        marginTop={2}
-                      >
-                        <Typography style={{ color: colors.deepPurple[500] }}>{`Điểm: ${
-                          currentResult_ls && currentResult_ls.totalScore
-                        }/${currentExercise_gs.point}`}</Typography>
-                      </Box>
+                      {currentResult_ls?.length && (
+                        <Box
+                          display="flex"
+                          flexDirection="row"
+                          alignItems="center"
+                          justifyContent="center"
+                          marginTop={2}
+                        >
+                          <Typography color="primary">{`Điểm: ${
+                            currentResult_ls && currentResult_ls.totalScore
+                          }/${currentExercise_gs.point}`}</Typography>
+                        </Box>
+                      )}
                     </Box>
                   </AccordionDetails>
                 </Accordion>

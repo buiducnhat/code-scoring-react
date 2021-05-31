@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ExerciseBox = ({ id, title, author, updatedAt, point }) => {
+const ExerciseBox = ({ id, title, author, authorAvatar, updatedAt, point }) => {
   const navigation = useHistory();
   const classes = useStyles();
 
@@ -53,11 +53,7 @@ const ExerciseBox = ({ id, title, author, updatedAt, point }) => {
         <Typography color="primary" variant="h3" className={classes.title}>
           {title}
         </Typography>
-        <Avatar
-          alt="avatar"
-          className={classes.avatar}
-          src={`https://i.pravatar.cc/100?u=${author}`}
-        />
+        <Avatar alt="avatar" className={classes.avatar} src={authorAvatar} />
         <Typography className={classes.author}>{author}</Typography>
         <Grid container alignItems="center" justify="center">
           <Grid item xs={6}>
