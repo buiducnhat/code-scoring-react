@@ -20,6 +20,7 @@ function createWindow() {
       slashes: true,
     });
   mainWindow.loadURL(startUrl);
+  mainWindow.setMenuBarVisibility(false);
   // Open the DevTools.
   mainWindow.webContents.openDevTools();
   // Emitted when the window is closed.
