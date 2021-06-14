@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  app:
+    image: code-scoring-react:v1
+    ports:
+      - '${PORT}:8080'
+    restart: unless-stopped
+    environment:
+      PORT: ${PORT}
+      REACT_APP_SERVER_URL: ${REACT_APP_SERVER_URL}
+      REACT_APP_TINY_API_KEY: ${REACT_APP_TINY_API_KEY}

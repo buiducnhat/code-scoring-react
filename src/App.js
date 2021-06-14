@@ -16,7 +16,6 @@ import Copyright from 'src/components/Copyright';
 import PageNotFound from 'src/components/PageNotFound';
 import { listRoute } from 'src/app/listRoute';
 import { fetchGetUserData } from 'src/features/authen/authenSlice';
-import './App.scss';
 
 const App = () => {
   const dispatch = useDispatch();
