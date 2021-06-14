@@ -1,9 +1,9 @@
 version: 2
 jobs:
-  build:
+  pull-and-build:
     # working_directory: ~/code-scoring-react
     docker:
-      - image: circleci/node
+      - image: circleci/node:lts
     steps:
       - checkout
       - run:
